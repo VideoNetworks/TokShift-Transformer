@@ -65,6 +65,19 @@ class VideoNet(nn.Module):
 				self.base_model.load_from(np.load(self.vit_pretrain))
 			self.feature_dim=self.num_class
 
+		elif 'CvT' in backbone:
+			if self.net == 'CvT':
+				print('=> base model: CvT, with backbone: {}Res{}'.format(backbone, self.vit_img_size))
+				from cvt_models.cvt import CvT
+				self.base_model = CvT(self.vit_img_size, 3, self.num_class)
+			self.feature_dim=self.num_class
+		elif 'swin' in backbone:
+			if self.net == 'Swin':
+				print('=> base model: Swin, with backbone: {}Res{}'.format(backbone, self.vit_img_size))
+				from timm.models import swin_transformer
+				self.base_model = getattr(swin_transformer, backbone)(pretrained=True, num_classes=self.num_class)
+			self.feature_dim=self.num_class
+
 		else:
 			raise ValueError('Unknown backbone: {}'.format(backbone))
 
@@ -117,6 +130,14 @@ class VideoNet(nn.Module):
 			base_out = base_out.view((-1,self.num_segments)+base_out.size()[1:])
 			#print("Baseout {}".format(base_out.shape))
 			#print(base_out[0,:,1:10])
+		elif 'CvT' in self.backbone:
+			base_out = self.base_model(input).contiguous()
+			base_out = base_out.view((-1,self.num_segments)+base_out.size()[1:]).contiguous()
+			#print(base_out[0,:,1:10])
+		elif 'swin' in self.backbone:
+			base_out = self.base_model(input).contiguous()
+			#print(base_out.shape)
+			base_out = base_out.view((-1,self.num_segments)+base_out.size()[1:]).contiguous()
 		#
 		output = self.consensus(base_out)
 		return output.squeeze(1)
