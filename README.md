@@ -30,6 +30,10 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 | TokShift-Large (HR)| Large16 | ImgNet21k | 384 & 8 | 1397.6 x 30 | 79.83 [`link`](https://drive.google.com/drive/folders/1tTXo5NzV4d9FTmnh40sUTXPoyUxWkq-I?usp=sharing)  |k400_tokshift_div4_8x32_large_384.yml |
 | TokShift-Large (HR)| Large16 | ImgNet21k | 384 & 12 | 2096.4 x 30 | 80.40 [`link`](https://drive.google.com/drive/folders/1vuDcSZLgzsicJr9d1yKSm5089fiN6PX7?usp=sharing) |k400_tokshift_div4_12x32_large_384.yml |
 
+Below is trainig log, we use 3 views evaluation (instead of 30 views) during validation for time-saving.
+<div align="center">
+  <img src="demo/trnlog.PNG" width="600px"/>
+</div>
 
 ## Installation
 * PyTorch >= 1.7, torchvision
