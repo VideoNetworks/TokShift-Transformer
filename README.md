@@ -32,7 +32,7 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 Below is trainig log, we use 3 views evaluation (instead of 30 views) during validation for time-saving.
 <div align="center">
-  <img src="demo/trnlog.PNG" width="600px"/>
+  <img src="demo/trnlog.PNG" width="800px"/>
 </div>
 
 ## Installation
