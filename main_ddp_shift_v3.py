@@ -1,4 +1,3 @@
-#!/vireo00/qiaoping/anaconda3/envs/torch1.7/bin/python
 import os
 import argparse
 import random
