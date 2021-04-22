@@ -13,8 +13,6 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 
 
-
-
 ## Updates
 ### April 16, 2021
 * Publish TokShift Transformer for video content understanding
@@ -32,7 +30,8 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 
 ## Installation
-
+* PyTorch >= 1.7, torchvision
+* tensorboardx
 
 ## Quick Start
 ### Train
