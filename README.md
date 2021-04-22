@@ -73,17 +73,32 @@ k400
    |_ val.txt
 ```
 
+3. Using train-script (train.sh) to train k400
+```
+#!/usr/bin/env python
+import os
 
+cmd = "python -u main_ddp_shift_v3.py \
+		--multiprocessing-distributed --world-size 1 --rank 0 \
+		--dist-ur tcp://127.0.0.1:23677 \
+		--tune_from pretrain/ViT-L_16_Img21.npz \
+		--cfg config/custom/kinetics400/k400_tokshift_div4_12x32_large_384.yml"
+os.system(cmd)
 
-
-3. 
-
-
-
-
-
+```
 ### Test
-
+Using test.sh (test.sh) to evaluate k400
+```
+#!/usr/bin/env python
+import os
+cmd = "python -u main_ddp_shift_v3.py \
+        --multiprocessing-distributed --world-size 1 --rank 0 \
+        --dist-ur tcp://127.0.0.1:23677 \
+        --evaluate \
+        --resume model_zoo/ViT-B_16_k400_dense_cls400_segs8x32_e18_lr0.1_B21_VAL224/best_vit_B8x32x224_k400.pth \
+        --cfg config/custom/kinetics400/k400_vit_8x32_224.yml"
+os.system(cmd)
+```
 
 
 ## Citing
