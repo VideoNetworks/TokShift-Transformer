@@ -1,0 +1,47 @@
+DATASET: Basketball-8
+
+# Dataset Folder
+FRAME_REPO: "/vireo00/yanbin2/Sport_Video/videos_our/Frames256_fined"
+TRN_LIST_TXT: "/vireo00/yanbin2/Sport_Video/videos_our/TraValTes/basketball_tsm/train.txt"
+VAL_LIST_TXT: "/vireo00/yanbin2/Sport_Video/videos_our/TraValTes/basketball_tsm/val.txt"
+TEST_LIST_TXT: "/vireo00/yanbin2/Sport_Video/videos_our/TraValTes/basketball_tsm/test.txt"
+FRAME_FORMAT: "img_{:05d}.jpg"
+USE_SUBSET: False
+
+# Data Proces 
+# 1. Input Clip
+T_SIZE: 8
+T_STEP: 8
+DENSE_OR_UNIFORM: "uniform"
+#DENSE_OR_UNIFORM: "dense"
+VAL_SAMPLE_TIMES: 8
+VAL_FLIP: True
+VAL_TEST_AUG: 5 # Multiple cropped patchs in Test, 
+# "3": Left ,Center, Right
+## Not Implemented: "5": Top-Left, Top-Right, Center, Bot-Left, Bot-Right
+
+# 2. Resize and Crop
+TRN_PATCH_SIZE: 224
+TRN_SHORT_SIDE_RANGE: [256, 320]
+
+VAL_PATCH_SIZE: 224
+VAL_SHORT_SIDE: 256
+
+# Backbone
+NET: TSM-R50
+BASE_NET: 'resnet50'
+CONSENSUS_TYPE: 'avg'
+BEFORE_SOFTMAX: True
+DROP_OUT: 0.5
+NUM_CLASS: 8
+NUM_SEGMENTS: 8
+POS_WEIGHT: 2.0
+BEFORE_SOFTMAX: True
+PARTIAL_BN: False
+PRETRAIN:  'imagenet'
+IS_SHIFT: True
+SHIFT_DIV: 8
+SHIFT_PLACE: 'blockres'
+FC_LR5: True
+TEMPORAL_POOL: False
+NON_LOCAL: False
