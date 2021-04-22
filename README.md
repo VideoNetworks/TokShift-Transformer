@@ -22,7 +22,7 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 ## Model Zoo and Baselines
 | architecture | backbone |  pretrain |  Res & Frames | GFLOPs x views|  top1  |  config |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | 
-| ViT (Video) | Base16 | ImgNet21k | 224 & 8 | 134.7 x 30 | 76.02 [`link`]()  |k400_vit_8x32_224.yml |
+| ViT (Video) | Base16 | ImgNet21k | 224 & 8 | 134.7 x 30 | 76.02 [`link`](https://drive.google.com/drive/folders/1Bj5tc9dQmmJbhouytPOIYJlvK6O2yFyE?usp=sharing)  |k400_vit_8x32_224.yml |
 | TokShift | Base-16 | ImgNet21k | 224 & 8 | 134.7 x 30 | 77.28 [`link`]() |k400_tokshift_div4_8x32_base_224.yml |
 | TokShift (MR)| Base16 | ImgNet21k | 256 & 8 | 175.8 x 30 | 77.68 [`link`]()  |k400_tokshift_div4_8x32_base_256.yml |
 | TokShift (HR)| Base16 | ImgNet21k | 384 & 8 | 394.7 x 30 | 78.14 [`link`]()  |k400_tokshift_div4_8x32_base_384.yml |
