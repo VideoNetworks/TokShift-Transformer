@@ -37,7 +37,7 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 ## Quick Start
 ### Train
 1. Download ImageNet-22k pretrained weights from [`Base16`](https://drive.google.com/file/d/1RMw1YO3hKQuK4hmcxqNZK_xi7LpxXVPp/view?usp=sharing) and [`Large16`](https://drive.google.com/file/d/12TkF_wFZn5JkpqjBE_CVmG3j8CTEas5K/view?usp=sharing).
-2. Prepare Kinetics-400 dataset organzied in the following structure
+2. Prepare Kinetics-400 dataset organized in the following structure, [`trainValTest`](https://drive.google.com/file/d/1i-NoXsyYVH4_D3M7iWInviVG41FCmiqf/view?usp=sharing)
 ```
 k400
 |_ frames331_train
@@ -69,8 +69,8 @@ k400
 |  |_ ...
 |
 |_ trainValTest
-|  |_ train.txt
-|  |_ val.txt
+   |_ train.txt
+   |_ val.txt
 ```
 
 
