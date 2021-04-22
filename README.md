@@ -48,29 +48,53 @@ k400
 |_ frames331_train
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |     |_ img_000001.jpg
-|  |     |_ img_000002.jpg
-|  |     |_ ...
-|  |  
-|  |_ [category name 0]
+|  |  |  |_ img_00001.jpg
+|  |  |  |_ img_00002.jpg
+|  |  |  |_ ...
+|  |  |
+|  |  |_ [video name 1]
+|  |  |   |_ img_00001.jpg
+|  |  |   |_ img_00002.jpg
+|  |  |   |_ ...
+|  |  |_ ...
+|  |
+|  |_ [category name 1]
 |  |  |_ [video name 0]
-|  |     |_ img_000001.jpg
-|  |     |_ img_000002.jpg
-|  |     |_ ...
+|  |  |  |_ img_00001.jpg
+|  |  |  |_ img_00002.jpg
+|  |  |  |_ ...
+|  |  |
+|  |  |_ [video name 1]
+|  |  |   |_ img_00001.jpg
+|  |  |   |_ img_00002.jpg
+|  |  |   |_ ...
+|  |  |_ ...
 |  |_ ...
 |
 |_ frames331_val
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |     |_ img_000001.jpg
-|  |     |_ img_000002.jpg
-|  |     |_ ...
-|  |  
-|  |_ [category name 0]
+|  |  |  |_ img_00001.jpg
+|  |  |  |_ img_00002.jpg
+|  |  |  |_ ...
+|  |  |
+|  |  |_ [video name 1]
+|  |  |   |_ img_00001.jpg
+|  |  |   |_ img_00002.jpg
+|  |  |   |_ ...
+|  |  |_ ...
+|  |
+|  |_ [category name 1]
 |  |  |_ [video name 0]
-|  |     |_ img_000001.jpg
-|  |     |_ img_000002.jpg
-|  |     |_ ...
+|  |  |  |_ img_00001.jpg
+|  |  |  |_ img_00002.jpg
+|  |  |  |_ ...
+|  |  |
+|  |  |_ [video name 1]
+|  |  |   |_ img_00001.jpg
+|  |  |   |_ img_00002.jpg
+|  |  |   |_ ...
+|  |  |_ ...
 |  |_ ...
 |
 |_ trainValTest
