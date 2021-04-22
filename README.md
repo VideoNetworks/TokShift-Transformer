@@ -43,29 +43,31 @@ k400
 |_ frames331_train
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |  |  |_ img_000001.jpg
-|  |  |  |_ img_000002.jpg
-|  |  |  |_ ...
-|  |  |
+|  |     |_ img_000001.jpg
+|  |     |_ img_000002.jpg
+|  |     |_ ...
+|  |  
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |  |  |_ img_000001.jpg
-|  |  |  |_ img_000002.jpg
-|  |  |  |_ ...
+|  |     |_ img_000001.jpg
+|  |     |_ img_000002.jpg
+|  |     |_ ...
 |  |_ ...
+|
 |_ frames331_val
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |  |  |_ img_000001.jpg
-|  |  |  |_ img_000002.jpg
-|  |  |  |_ ...
-|  |  |
+|  |     |_ img_000001.jpg
+|  |     |_ img_000002.jpg
+|  |     |_ ...
+|  |  
 |  |_ [category name 0]
 |  |  |_ [video name 0]
-|  |  |  |_ img_000001.jpg
-|  |  |  |_ img_000002.jpg
-|  |  |  |_ ...
+|  |     |_ img_000001.jpg
+|  |     |_ img_000002.jpg
+|  |     |_ ...
 |  |_ ...
+|
 |_ trainValTest
 |  |_ train.txt
 |  |_ val.txt
