@@ -14,6 +14,8 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 
 ## Updates
+### April 22, 2021
+* Add Train/Test guidline and Data perpariation
 ### April 16, 2021
 * Publish TokShift Transformer for video content understanding
 
