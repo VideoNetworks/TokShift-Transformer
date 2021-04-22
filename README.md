@@ -36,7 +36,14 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 ## Quick Start
 ### Train
-Download ImageNet-22k pretrained weights from [`Base16`] (https://drive.google.com/file/d/1RMw1YO3hKQuK4hmcxqNZK_xi7LpxXVPp/view?usp=sharing) and [`Large16`](https://drive.google.com/file/d/12TkF_wFZn5JkpqjBE_CVmG3j8CTEas5K/view?usp=sharing).
+1. Download ImageNet-22k pretrained weights from [`Base16`](https://drive.google.com/file/d/1RMw1YO3hKQuK4hmcxqNZK_xi7LpxXVPp/view?usp=sharing) and [`Large16`](https://drive.google.com/file/d/12TkF_wFZn5JkpqjBE_CVmG3j8CTEas5K/view?usp=sharing).
+2. Prepare Kinetics-400 dataset organzied in the following structure
+
+3. 
+
+
+
+
 
 ### Test
 
