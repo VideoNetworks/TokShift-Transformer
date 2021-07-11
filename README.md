@@ -15,11 +15,11 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 ## Updates
 ### July 11, 2021
-* Release this V1 version (exactly as the paper) to public.
-* we are preparing a V2 verson which include the following modifications, will releaset within 1 week:
+* Release this V1 version (the version used in paper) to public.
+* we are preparing a V2 version which include the following modifications, will release within 1 week:
 1. Directly decode video mp4 file during training/evaluation
 2. Change to adopt standarlize timm code-base.
-3. Performances further improved than reported in paper version (average +0.5).
+3. Performances are further improved than reported in paper version (average +0.5).
 
 
 ### April 22, 2021
@@ -138,7 +138,7 @@ os.system(cmd)
 ```
 
 ## Contributors
-VideoNet is written and maintained by [Hao Zhang](https://hzhang57.github.io/), [Yanbin Hao](https://haoyanbin918.github.io/).
+VideoNet is written and maintained by [Dr. Hao Zhang](https://hzhang57.github.io/) and [Dr. Yanbin Hao](https://haoyanbin918.github.io/).
 
 ## Citing
 If you find TokShift-xfmr is useful in your research, please use the following BibTeX entry for citation.
