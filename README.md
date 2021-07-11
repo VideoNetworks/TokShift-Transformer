@@ -8,6 +8,7 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 - [Model Zoo and Baselines](#model-zoo-and-baselines)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Contributors](#contributors)
 - [Citing](#citing)
 - [Acknowledgement](#Acknowledgement)
 
