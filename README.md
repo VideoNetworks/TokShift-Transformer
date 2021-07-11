@@ -1,5 +1,5 @@
 # TokShift-Transformer
-This is official implementaion of paper "Token Shift Transformer for Video Classification". We achieve SOTA performance 80.40% on Kinetics-400 val.
+This is official implementaion of paper "Token Shift Transformer for Video Classification". We achieve SOTA performance 80.40% on Kinetics-400 val. [`Paper link`]() 
 <div align="center">
   <img src="demo/tokshift.PNG" width="800px"/>
 </div>
