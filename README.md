@@ -14,6 +14,10 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 
 ## Updates
+### July 11, 2021
+*Release this V1 version (exactly as the paper) to public, we are preparing a V2 verson which include the following modification, will releaset within 1 week.
+
+
 ### April 22, 2021
 * Add Train/Test guidline and Data perpariation
 ### April 16, 2021
@@ -135,8 +139,8 @@ If you find TokShift-xfmr is useful in your research, please use the following B
 ```BibTeX
 @article{tokshift2021,
   title={Token Shift Transformer for Video Classification},
-  author={Anonymous},
-  journal={Under Review},
+  author={Hao Zhang, Yanbin Hao, Chong-Wah Ngo},
+  journal={ACM Multimieda 2021},
 }
 ```
 
