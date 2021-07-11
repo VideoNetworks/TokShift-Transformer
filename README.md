@@ -15,7 +15,7 @@ This is official implementaion of paper "Token Shift Transformer for Video Class
 
 ## Updates
 ### July 11, 2021
-*Release this V1 version (exactly as the paper) to public, we are preparing a V2 verson which include the following modification, will releaset within 1 week.
+* Release this V1 version (exactly as the paper) to public, we are preparing a V2 verson which include the following modification, will releaset within 1 week.
 
 
 ### April 22, 2021
