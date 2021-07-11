@@ -146,7 +146,7 @@ If you find TokShift-xfmr is useful in your research, please use the following B
 @article{tokshift2021,
   title={Token Shift Transformer for Video Classification},
   author={Hao Zhang, Yanbin Hao, Chong-Wah Ngo},
-  journal={ACM Multimieda 2021},
+  journal={ACM Multimedia 2021},
 }
 ```
 
