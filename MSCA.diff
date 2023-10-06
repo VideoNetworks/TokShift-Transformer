@@ -1,0 +1,2353 @@
+diff --git a/.gitignore b/.gitignore
+index 7fce5c8..2f3cee3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1 +1,2 @@
+-!**/__pycache__/
++**/__pycache__/
++pretrain
+diff --git a/README.md b/README.md
+index cd914a3..2485a61 100644
+--- a/README.md
++++ b/README.md
+@@ -1,58 +1,56 @@
+-# TokShift-Transformer
+-This is official implementaion of paper "Token Shift Transformer for Video Classification". We achieve SOTA performance 80.40% on Kinetics-400 val. [`Paper link`](https://arxiv.org/abs/2108.02432) 
+-<div align="center">
+-  <img src="demo/tokshift.PNG" width="800px"/>
+-</div>
+-
+-- [Updates](#updates)
+-- [Model Zoo and Baselines](#model-zoo-and-baselines)
+-- [Installation](#installation)
+-- [Quick Start](#quick-start)
+-- [Contributors](#contributors)
+-- [Citing](#citing)
+-- [Acknowledgement](#Acknowledgement)
+-
+-
+-
+-## Updates
+-### July 11, 2021
+-* Release this V1 version (the version used in paper) to public.
+-* we are preparing a V2 version which include the following modifications, will release within 1 week:
+-1. Directly decode video mp4 file during training/evaluation
+-2. Change to adopt standarlize timm code-base.
+-3. Performances are further improved than reported in paper version (average +0.5).
+-
+-
+-### April 22, 2021
+-* Add Train/Test guidline and Data perpariation
+-### April 16, 2021
+-* Publish TokShift Transformer for video content understanding
+-
+-## Model Zoo and Baselines
+-| architecture | backbone |  pretrain |  Res & Frames | GFLOPs x views|  top1  |  config |
+-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | 
+-| ViT (Video) | Base16 | ImgNet21k | 224 & 8 | 134.7 x 30 | 76.02 [`link`](https://drive.google.com/drive/folders/1Bj5tc9dQmmJbhouytPOIYJlvK6O2yFyE?usp=sharing)  |k400_vit_8x32_224.yml |
+-| TokShift | Base-16 | ImgNet21k | 224 & 8 | 134.7 x 30 | 77.28 [`link`](https://drive.google.com/drive/folders/1ty6OqhZpUxSzokXmP1IUFpze5A0Gihuu?usp=sharing) |k400_tokshift_div4_8x32_base_224.yml |
+-| TokShift (MR)| Base16 | ImgNet21k | 256 & 8 | 175.8 x 30 | 77.68 [`link`](https://drive.google.com/drive/folders/1xmW8VjYDdw996j17mHZhhjBnA2dJRj7a?usp=sharing)  |k400_tokshift_div4_8x32_base_256.yml |
+-| TokShift (HR)| Base16 | ImgNet21k | 384 & 8 | 394.7 x 30 | 78.14 [`link`](https://drive.google.com/drive/folders/1QNZWV9VUJuZdUzoU4NUtSZxFgLF3MONm?usp=sharing)  |k400_tokshift_div4_8x32_base_384.yml |
+-| TokShift | Base16 | ImgNet21k | 224 & 16 | 268.5 x 30 | 78.18 [`link`](https://drive.google.com/drive/folders/1w2XrDRLNJdDG1e6OczsxKEr6-LuwhVgv?usp=sharing) |k400_tokshift_div4_16x32_base_224.yml |
+-| TokShift-Large (HR)| Large16 | ImgNet21k | 384 & 8 | 1397.6 x 30 | 79.83 [`link`](https://drive.google.com/drive/folders/1tTXo5NzV4d9FTmnh40sUTXPoyUxWkq-I?usp=sharing)  |k400_tokshift_div4_8x32_large_384.yml |
+-| TokShift-Large (HR)| Large16 | ImgNet21k | 384 & 12 | 2096.4 x 30 | 80.40 [`link`](https://drive.google.com/drive/folders/1vuDcSZLgzsicJr9d1yKSm5089fiN6PX7?usp=sharing) |k400_tokshift_div4_12x32_large_384.yml |
+-
+-Below is trainig log, we use 3 views evaluation (instead of 30 views) during validation for time-saving.
+-<div align="center">
+-  <img src="demo/trnlog.PNG" width="800px"/>
+-</div>
+-
+-## Installation
+-* PyTorch >= 1.7, torchvision
+-* tensorboardx
+-
+-## Quick Start
+-### Train
+-1. Download ImageNet-22k pretrained weights from [`Base16`](https://drive.google.com/file/d/1RMw1YO3hKQuK4hmcxqNZK_xi7LpxXVPp/view?usp=sharing) and [`Large16`](https://drive.google.com/file/d/12TkF_wFZn5JkpqjBE_CVmG3j8CTEas5K/view?usp=sharing).
+-2. Prepare Kinetics-400 dataset organized in the following structure, [`trainValTest`](https://drive.google.com/file/d/1i-NoXsyYVH4_D3M7iWInviVG41FCmiqf/view?usp=sharing)
++# 1. MSCA
++
++- [1. MSCA](#1-msca)
++  - [1.1. Citation](#11-citation)
++  - [1.2. Acknowledgement](#12-acknowledgement)
++  - [1.4. Implementation](#14-implementation)
++  - [1.5. Weights](#15-weights)
++  - [1.6. Prepare dataset](#16-prepare-dataset)
++  - [1.7. train and val](#17-train-and-val)
++
++This is an official repo of paper "Temporal Cross-attention for Action Recognition" at ACCV2022 Workshop on Vision Transformers: Theory and applications (VTTA-ACCV2022).
++
++- [CVF open access](https://openaccess.thecvf.com/content/ACCV2022W/TCV/html/Hashiguchi_Temporal_Cross-attention_for_Action_Recognition_ACCVW_2022_paper.html)
++- [PDF](https://openaccess.thecvf.com/content/ACCV2022W/TCV/papers/Hashiguchi_Temporal_Cross-attention_for_Action_Recognition_ACCVW_2022_paper.pdf)
++- [slide](https://drive.google.com/file/d/1RRtuB8SKQ2KlpD7jByD4kyOaKoBu0bgj/view?usp=share_link)
++- [LNCS](https://link.springer.com/chapter/10.1007/978-3-031-27066-6_20)
++- [DOI:10.1007/978-3-031-27066-6_20](<https://doi.org/10.1007/978-3-031-27066-6_20>)
++- [arXiv:2204.0045](https://arxiv.org/abs/2204.00452)
++
++## 1.1. Citation
++
++```BibTeX
++@InProceedings{Hashiguchi_2022_ACCV,
++    author    = {Hashiguchi, Ryota and Tamaki, Toru},
++    title     = {Temporal Cross-attention for Action Recognition},
++    booktitle = {Proceedings of the Asian Conference on Computer Vision (ACCV) Workshops},
++    month     = {December},
++    year      = {2022},
++    pages     = {276-288}
++}
+ ```
++
++## 1.2. Acknowledgement
++
++We thank for the author of TokenShift:
++
++- <https://github.com/VideoNetworks/TokShift-Transformer>
++
++## 1.4. Implementation
++
++MSCA is build upon [TokenShift](https://github.com/VideoNetworks/TokShift-Transformer).
++
++## 1.5. Weights
++
++Download ImageNet-22k pretrained weights from [`Base16`](https://drive.google.com/file/d/1RMw1YO3hKQuK4hmcxqNZK_xi7LpxXVPp/view?usp=sharing).
++
++## 1.6. Prepare dataset
++
++Prepare Kinetics-400 dataset organized in the following structure.
++
++Almost same with TokenShift, with slight modificaitons. See [config file](config/custom/kinetics400/k400_attentionshift_div4_8x32_base_224.yml).
++
++```text
+ k400
+ |_ frames331_train
+ |  |_ [category name 0]
+@@ -111,50 +109,8 @@ k400
+    |_ val.txt
+ ```
+ 
+-3. Using train-script (train.sh) to train k400
+-```
+-#!/usr/bin/env python
+-import os
+-
+-cmd = "python -u main_ddp_shift_v3.py \
+-		--multiprocessing-distributed --world-size 1 --rank 0 \
+-		--dist-ur tcp://127.0.0.1:23677 \
+-		--tune_from pretrain/ViT-L_16_Img21.npz \
+-		--cfg config/custom/kinetics400/k400_tokshift_div4_12x32_large_384.yml"
+-os.system(cmd)
+-
+-```
+-### Test
+-Using test.sh (test.sh) to evaluate k400
+-```
+-#!/usr/bin/env python
+-import os
+-cmd = "python -u main_ddp_shift_v3.py \
+-        --multiprocessing-distributed --world-size 1 --rank 0 \
+-        --dist-ur tcp://127.0.0.1:23677 \
+-        --evaluate \
+-        --resume model_zoo/ViT-B_16_k400_dense_cls400_segs8x32_e18_lr0.1_B21_VAL224/best_vit_B8x32x224_k400.pth \
+-        --cfg config/custom/kinetics400/k400_vit_8x32_224.yml"
+-os.system(cmd)
+-```
+-
+-## Contributors
+-VideoNet is written and maintained by [Dr. Hao Zhang](https://hzhang57.github.io/) and [Dr. Yanbin Hao](https://haoyanbin918.github.io/).
++## 1.7. train and val
+ 
+-## Citing
+-If you find TokShift-xfmr is useful in your research, please use the following BibTeX entry for citation.
+-```BibTeX
+-@article{tokshift2021,
+-  title={Token Shift Transformer for Video Classification},
+-  author={Hao Zhang, Yanbin Hao, Chong-Wah Ngo},
+-  journal={ACM Multimedia 2021},
+-}
++```bash
++python main.py --tune_from pretrain/ViT-B_16_Img21.npz --cfg config/custom/kinetics400/k400_attentionshift_div4_8x32_base_224.yml
+ ```
+-
+-## Acknowledgement
+-Thanks for the following Github projects:
+-- https://github.com/rwightman/pytorch-image-models
+-- https://github.com/jeonsworld/ViT-pytorch
+-- https://github.com/mit-han-lab/temporal-shift-module
+-- https://github.com/amdegroot/ssd.pytorch
+-
+diff --git a/config/custom/kinetics400/k400_attentionshift_div4_8x32_base_224.yml b/config/custom/kinetics400/k400_attentionshift_div4_8x32_base_224.yml
+new file mode 100644
+index 0000000..416bbc5
+--- /dev/null
++++ b/config/custom/kinetics400/k400_attentionshift_div4_8x32_base_224.yml
+@@ -0,0 +1,65 @@
++DATASET: "k400"
++
++# Dataset Folder
++FRAME_REPO: "/mnt/HDD12TB-1/dataset/Kinetics400.frames"
++TRN_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/train_list.txt"
++VAL_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/val_list.txt"
++TEST_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/val_list.txt"
++FRAME_FORMAT: "{:06d}.jpg"
++USE_SUBSET: False
++
++# TRAINING-CFG
++LABEL_SMOOTH: 0.01
++
++PIXEL_MEAN: [127.5, 127.5, 127.5]
++PIXEL_STD: [0.5, 0.5, 0.5]
++
++TRN_BATCH: 21 # Batch Per GPU, This setting is on 2xV100
++VAL_BATCH: 2 # Batch Per GPU, This setting is on 2xV100
++LR_TYPE: "sgd"
++LR_SCHEME: "step"
++LR: 0.1 # This is 42 Clips settings, using linear-scale ruel to adjust this value
++LR_STEPS: [10, 15, 18]
++EPOCH: 18
++MOMENTUM: 0.9
++WEIGHT_DECAY: 0.0 # 5e-4
++GRADIENT_ACCUMULATION_STEPS: 10 # 8
++CLIP_GD: 1.0
++
++# Data Proces
++# 1. Input Clip
++T_SIZE: 8
++T_STEP: 32
++#DENSE_OR_UNIFORM: "uniform"
++UNIFORM_TWICE: True
++
++DENSE_OR_UNIFORM: "dense"
++VAL_SAMPLE_TIMES: 1 # Set to 10 when evaluating, Set to 1 when training for time-saving
++VAL_FLIP: False
++# Multiple cropped patchs in Test,
++# "3": Left ,Center, Right
++## Not Implemented: "5": Top-Left, Top-Right, Center, Bot-Left, Bot-Right
++VAL_TEST_AUG: 3 # Multiple cropped patchs in Test,
++
++# 2. Resize and Crop
++TRN_PATCH_SIZE: 224
++TRN_SHORT_SIDE_RANGE: [224, 330]
++
++VAL_PATCH_SIZE: 224
++VAL_SHORT_SIDE: 224
++
++# Backbone
++NET: "AttentionShift"
++VER: 3
++NUM_CLASS: 400
++BASE_NET: "ViT-B_16"
++CONSENSUS_TYPE: "avg"
++DROP_OUT: 0.0
++PARTIAL_BN: False # True Froze all BN
++PRINT_SPEC: True
++PRETRAIN: "imagenet"
++IS_SHIFT: True # Select shift
++SHIFT_DIV: 12
++USE_PRECISE_BN: 0
++DROP_BLOCK: 0.0
++#USE_PRECISE_BN: 0
+diff --git a/data/dataset.py b/data/dataset.py
+index 62804e4..e04177e 100644
+--- a/data/dataset.py
++++ b/data/dataset.py
+@@ -1,7 +1,7 @@
+ '''
+ Dataset for Kinetics, Basketball-8, ...
+ '''
+-from torchvision import transforms 
++from torchvision import transforms
+ import torch
+ from pathlib import Path
+ from PIL import Image
+@@ -9,228 +9,223 @@ import random
+ import numpy as np
+ import torch.utils.data as data
+ 
++
+ class DataRepo(data.Dataset):
+-	def __init__(self, cfg, is_train='train', aug=None):
+-		self.is_train=is_train
+-		self.use_subset   = cfg['USE_SUBSET']
+-		self.frame_repo   = cfg['FRAME_REPO']
+-		self.frame_format = cfg['FRAME_FORMAT']
+-		self.t_size       = cfg['T_SIZE']
+-		self.t_step       = cfg['T_STEP']
+-		self.dense_or_uniform = cfg['DENSE_OR_UNIFORM']
+-		self.uniform_twice = cfg['UNIFORM_TWICE']
+-		self.val_test_aug =  cfg["VAL_TEST_AUG"]
+-		self.val_flip = cfg["VAL_FLIP"]		
+-		self.sample_times = cfg["VAL_SAMPLE_TIMES"]
+-
+-		if self.is_train == "train":
+-			self.list_txt = cfg['TRN_LIST_TXT']
+-		elif self.is_train == "val":
+-			self.list_txt = cfg['VAL_LIST_TXT']
+-		else:
+-			self.list_txt = cfg['TEST_LIST_TXT']
+-		self.aug = aug
+-		self.vidpth_framecnt_label = load_annot_txt(self.list_txt,
+-													self.use_subset)
+-
+-
+-	def __len__(self):
+-		return len(self.vidpth_framecnt_label)
+-
+-	
+-	def __getitem__(self, index):
+-		samples = self.fetch_rgb_clip(index)
+-		return samples	
+-
+-	def fetch_rgb_clip(self, index):
+-		vidpth   = self.vidpth_framecnt_label[index][0]		
+-		framecnt = self.vidpth_framecnt_label[index][1]
+-		label    = self.vidpth_framecnt_label[index][2]
+-
+-		frame_vid_folder = Path(self.frame_repo) / vidpth
+-
+-		# Train Data Process
+-		if self.is_train == "train":
+-			if self.dense_or_uniform == "uniform":
+-				pil_clip  = read_random_uniform_clip(frame_vid_folder, framecnt,
+-									self.frame_format,
+-									self.t_size)
+-			else:
+-				pil_clip  = read_random_clip(frame_vid_folder, framecnt,
+-									self.frame_format, self.t_size, self.t_step)
+-
+-			assert self.aug != None
+-			tensor_clip, label = self.aug(pil_clip, label)
+-
+-		# Test/Val Data Process
+-		else:
+-			assert self.aug !=None
+-			
+-			if self.dense_or_uniform == "uniform":
+-				tmp_repo = []
+-				pil_clip_repo  = read_uniform_clip(frame_vid_folder, framecnt,
+-											self.frame_format,
+-											self.t_size, self.uniform_twice)
+-				tmp_repo = []
+-				for pil_clip in pil_clip_repo:
+-					# Original
+-					tensor_clip, label = self.aug(pil_clip, label)
+-					tmp_repo.append(tensor_clip)
+-					# Flip
+-					if self.val_flip:
+-						pil_clip = [ transforms.functional.hflip(x) for x in pil_clip ]
+-						tensor_clip, label = self.aug(pil_clip, label)
+-						tmp_repo.append(tensor_clip)
+-						
+-				tensor_clip = torch.cat(tmp_repo, 0)
+-
+-			else:
+-				pil_clip_repo = read_clip(frame_vid_folder, framecnt,
+-										self.frame_format, self.t_size, self.t_step,
+-										self.sample_times)
+-				tmp_repo = []
+-				for pil_clip in pil_clip_repo:
+-					# Original
+-					tensor_clip, label = self.aug(pil_clip, label)
+-					tmp_repo.append(tensor_clip)
+-					# Flip
+-					if self.val_flip:
+-						pil_clip = [ transforms.functional.hflip(x) for x in pil_clip ]
+-						tensor_clip, label = self.aug(pil_clip, label)
+-						tmp_repo.append(tensor_clip)
+-						
+-				tensor_clip = torch.cat(tmp_repo, 0)
+-
+-		return Path(vidpth).name, tensor_clip, label
+-		
++    def __init__(self, cfg, is_train='train', aug=None):
++        self.is_train = is_train
++        self.use_subset = cfg['USE_SUBSET']
++        self.frame_repo = cfg['FRAME_REPO']
++        self.frame_format = cfg['FRAME_FORMAT']
++        self.t_size = cfg['T_SIZE']
++        self.t_step = cfg['T_STEP']
++        self.dense_or_uniform = cfg['DENSE_OR_UNIFORM']
++        self.uniform_twice = cfg['UNIFORM_TWICE']
++        self.val_test_aug = cfg["VAL_TEST_AUG"]
++        self.val_flip = cfg["VAL_FLIP"]
++        self.sample_times = cfg["VAL_SAMPLE_TIMES"]
++
++        if self.is_train == "train":
++            self.list_txt = cfg['TRN_LIST_TXT']
++        elif self.is_train == "val":
++            self.list_txt = cfg['VAL_LIST_TXT']
++        else:
++            self.list_txt = cfg['TEST_LIST_TXT']
++        self.aug = aug
++        self.vidpth_framecnt_label = load_annot_txt(self.list_txt,
++                                                    self.use_subset)
++
++    def __len__(self):
++        return len(self.vidpth_framecnt_label)
++
++    def __getitem__(self, index):
++        samples = self.fetch_rgb_clip(index)
++        return samples
++
++    def fetch_rgb_clip(self, index):
++        vidpth = self.vidpth_framecnt_label[index][0]
++        framecnt = self.vidpth_framecnt_label[index][1]
++        label = self.vidpth_framecnt_label[index][2]
++
++        frame_vid_folder = Path(self.frame_repo) / vidpth
++
++        # Train Data Process
++        if self.is_train == "train":
++            if self.dense_or_uniform == "uniform":
++                pil_clip = read_random_uniform_clip(frame_vid_folder, framecnt,
++                                                    self.frame_format,
++                                                    self.t_size)
++            else:
++                pil_clip = read_random_clip(frame_vid_folder, framecnt,
++                                            self.frame_format, self.t_size, self.t_step)
++
++            assert self.aug is not None
++            tensor_clip, label = self.aug(pil_clip, label)
++
++        # Test/Val Data Process
++        else:
++            assert self.aug is not None
++
++            if self.dense_or_uniform == "uniform":
++                tmp_repo = []
++                pil_clip_repo = read_uniform_clip(frame_vid_folder, framecnt,
++                                                  self.frame_format,
++                                                  self.t_size, self.uniform_twice)
++                tmp_repo = []
++                for pil_clip in pil_clip_repo:
++                    # Original
++                    tensor_clip, label = self.aug(pil_clip, label)
++                    tmp_repo.append(tensor_clip)
++                    # Flip
++                    if self.val_flip:
++                        pil_clip = [transforms.functional.hflip(x) for x in pil_clip]
++                        tensor_clip, label = self.aug(pil_clip, label)
++                        tmp_repo.append(tensor_clip)
++
++                tensor_clip = torch.cat(tmp_repo, 0)
++
++            else:
++                pil_clip_repo = read_clip(frame_vid_folder, framecnt,
++                                          self.frame_format, self.t_size, self.t_step,
++                                          self.sample_times)
++                tmp_repo = []
++                for pil_clip in pil_clip_repo:
++                    # Original
++                    tensor_clip, label = self.aug(pil_clip, label)
++                    tmp_repo.append(tensor_clip)
++                    # Flip
++                    if self.val_flip:
++                        pil_clip = [transforms.functional.hflip(x) for x in pil_clip]
++                        tensor_clip, label = self.aug(pil_clip, label)
++                        tmp_repo.append(tensor_clip)
++
++                tensor_clip = torch.cat(tmp_repo, 0)
++
++        return Path(vidpth).name, tensor_clip, label
++
+ 
+ def load_annot_txt(list_txt, use_subset):
+-	vidpth_framecnt_label = []
+-	with open(list_txt, "r") as f:
+-		lines = f.readlines()
+-	for ii, line in enumerate(lines):
+-		row = line.strip().split(" ")
+-		assert len(row) == 3
+-		vidpth, framecnt, label = row[0], int(row[1]), int(row[2])
+-		# We "define" the subset of original set to be
+-		# video where ii%4!=0
+-		if use_subset and ii % 10 !=0:
+-			continue
+-		vidpth_framecnt_label.append([vidpth, framecnt, label])
+-	return vidpth_framecnt_label
+-
+-
+-def read_random_clip(frame_vid_folder, frame_cnt, 
+-				frame_format, t_size, t_step):	
+-	# Generate a random value
+-	min_bound = 0
+-	max_bound = max(frame_cnt - t_size * t_step + 1, 1)
+-	
+-	st_idx    = 0 if max_bound == 1 else np.random.randint(0, max_bound -1)
+-	idxs = [ (idx * t_step + st_idx) % frame_cnt  + 1 for idx in range(t_size) ]
+-	pil_clip = []
+-	for idx in idxs:
+-		img_pth = frame_vid_folder / frame_format.format(idx)
+-		#print(img_pth)
+-		pil_img = Image.open(str(img_pth)).convert('RGB')
+-		pil_clip.append(pil_img)
+-
+-	return pil_clip
+-
+-
+-def read_clip(frame_vid_folder, frame_cnt, 
+-				frame_format, t_size, t_step, sample_times):	
+-	max_bound = max(frame_cnt - t_size * t_step + 1, 1)
+-	tick = 1.0 * frame_cnt / sample_times
+-	if tick == 0:
+-		tick == 1
+-	
+-	st_idxs = np.array([ int(x * tick) for x in range(sample_times) ])
+-	st_idxs = np.clip(st_idxs, 0, max_bound)
+-
+-	pil_clip_repo = []
+-	for st_idx in st_idxs:
+-		st_idx = 0 if max_bound == 1 else st_idx
+-		idxs = [ (idx * t_step + st_idx) % frame_cnt  + 1 for idx in range(t_size) ]
+-		#print(idxs)
+-		pil_clip = []
+-		for idx in idxs:
+-			img_pth = frame_vid_folder / frame_format.format(idx)
+-			pil_img = Image.open(str(img_pth)).convert('RGB')
+-			pil_clip.append(pil_img)
+-		pil_clip_repo.append(pil_clip)
+-
+-	return pil_clip_repo
+-
+-
+-def read_random_uniform_clip(frame_vid_folder, frame_cnt, 
+-				frame_format, t_size):	
+-
+-	average_druation = frame_cnt // t_size
+-	if average_druation > 0:
+-		idxs = np.multiply(list(range(t_size)), average_druation) + np.random.randint(average_druation, size=t_size)
+-	elif frame_cnt > t_size:
+-		idxs = np.sort(np.random.randint(frame_cnt + 1, size=t_size))
+-	else:
+-		idxs = np.zeros((frame_cnt,))
+-
+-	idxs = idxs + 1
+-	# Generate a random value
+-	pil_clip = []
+-	for idx in idxs:
+-		img_pth = frame_vid_folder / frame_format.format(idx)
+-		pil_img = Image.open(str(img_pth)).convert('RGB')
+-		pil_clip.append(pil_img)
+-
+-	return pil_clip
+-
+-
+-def read_uniform_clip(frame_vid_folder, frame_cnt, 
+-		    frame_format, t_size, uniform_twice):
+-	pil_clip_repo = []
+-	# First
+-	tick = 1.0 * frame_cnt / t_size
+-	idxs = np.array(
+-			[int(tick / 2.0 + tick * x) for x in range(t_size)]
+-			)
+-	pil_clip = []
+-	for idx in idxs:
+-		img_pth = frame_vid_folder / frame_format.format(idx)
+-		pil_img = Image.open(str(img_pth)).convert('RGB')
+-		pil_clip.append(pil_img)
+-	pil_clip_repo.append(pil_clip)
+-
+-	# Second
+-	if uniform_twice:
+-		pil_clip = []
+-		idxs2 = np.array(
+-                [int(tick * x) for x in range(t_size)]
+-                )
+-		idxs2 = idxs2 + 1
+-		for idx2 in idxs2:
+-			img_pth = frame_vid_folder / frame_format.format(idx)
+-			pil_img = Image.open(str(img_pth)).convert('RGB')
+-			pil_clip.append(pil_img)
+-		pil_clip_repo.append(pil_clip)
+-
+-	return pil_clip_repo
++    vidpth_framecnt_label = []
++    with open(list_txt, "r") as f:
++        lines = f.readlines()
++    for ii, line in enumerate(lines):
++        row = line.strip().split(",")
++        assert len(row) == 3
++        vidpth, framecnt, label = row[0], int(row[1]), int(row[2])
++        # We "define" the subset of original set to be
++        # video where ii%4!=0
++        if use_subset and ii % 10 != 0:
++            continue
++        vidpth_framecnt_label.append([vidpth, framecnt, label])
++    return vidpth_framecnt_label
++
++
++def read_random_clip(frame_vid_folder, frame_cnt,
++                     frame_format, t_size, t_step):
++    # Generate a random value
++    min_bound = 0
++    max_bound = max(frame_cnt - t_size * t_step + 1, 1)
++
++    st_idx = 0 if max_bound == 1 else np.random.randint(0, max_bound - 1)
++    idxs = [(idx * t_step + st_idx) % frame_cnt + 1 for idx in range(t_size)]
++    pil_clip = []
++    for idx in idxs:
++        img_pth = frame_vid_folder / frame_format.format(idx)
++        # print(img_pth)
++        pil_img = Image.open(str(img_pth)).convert('RGB')
++        pil_clip.append(pil_img)
++
++    return pil_clip
++
++
++def read_clip(frame_vid_folder, frame_cnt,
++              frame_format, t_size, t_step, sample_times):
++    max_bound = max(frame_cnt - t_size * t_step + 1, 1)
++    tick = 1.0 * frame_cnt / sample_times
++    if tick == 0:
++        tick == 1
++
++    st_idxs = np.array([int(x * tick) for x in range(sample_times)])
++    st_idxs = np.clip(st_idxs, 0, max_bound)
++
++    pil_clip_repo = []
++    for st_idx in st_idxs:
++        st_idx = 0 if max_bound == 1 else st_idx
++        idxs = [(idx * t_step + st_idx) % frame_cnt + 1 for idx in range(t_size)]
++        # print(idxs)
++        pil_clip = []
++        for idx in idxs:
++            img_pth = frame_vid_folder / frame_format.format(idx)
++            pil_img = Image.open(str(img_pth)).convert('RGB')
++            pil_clip.append(pil_img)
++        pil_clip_repo.append(pil_clip)
++
++    return pil_clip_repo
++
++
++def read_random_uniform_clip(frame_vid_folder, frame_cnt,
++                             frame_format, t_size):
++
++    average_druation = frame_cnt // t_size
++    if average_druation > 0:
++        idxs = np.multiply(list(range(t_size)), average_druation) + np.random.randint(average_druation, size=t_size)
++    elif frame_cnt > t_size:
++        idxs = np.sort(np.random.randint(frame_cnt + 1, size=t_size))
++    else:
++        idxs = np.zeros((frame_cnt,))
++
++    idxs = idxs + 1
++    # Generate a random value
++    pil_clip = []
++    for idx in idxs:
++        img_pth = frame_vid_folder / frame_format.format(idx)
++        pil_img = Image.open(str(img_pth)).convert('RGB')
++        pil_clip.append(pil_img)
++
++    return pil_clip
++
++
++def read_uniform_clip(frame_vid_folder, frame_cnt,
++                      frame_format, t_size, uniform_twice):
++    pil_clip_repo = []
++    # First
++    tick = 1.0 * frame_cnt / t_size
++    idxs = np.array(
++        [int(tick / 2.0 + tick * x) for x in range(t_size)]
++    )
++    pil_clip = []
++    for idx in idxs:
++        img_pth = frame_vid_folder / frame_format.format(idx)
++        pil_img = Image.open(str(img_pth)).convert('RGB')
++        pil_clip.append(pil_img)
++    pil_clip_repo.append(pil_clip)
++
++    # Second
++    if uniform_twice:
++        pil_clip = []
++        idxs2 = np.array(
++            [int(tick * x) for x in range(t_size)]
++        )
++        idxs2 = idxs2 + 1
++        for idx2 in idxs2:
++            img_pth = frame_vid_folder / frame_format.format(idx)
++            pil_img = Image.open(str(img_pth)).convert('RGB')
++            pil_clip.append(pil_img)
++        pil_clip_repo.append(pil_clip)
++
++    return pil_clip_repo
+ 
+ 
+ def data_collate(batch):
+-	'''
+-	Custom collate function to deal with batch with non-tensore value
+-	'''
+-	batch_vid   = []
+-	batch_clip  = []
+-	batch_label = []  
+-
+-	for sample in batch:
+-		batch_vid.append(sample[0])
+-		batch_clip.append(sample[1])
+-		batch_label.append(sample[2])
+-	batch_clip = torch.stack(batch_clip, 0)
+-	return batch_vid, batch_clip, batch_label
+-
+-
+-
+-
++    '''
++    Custom collate function to deal with batch with non-tensore value
++    '''
++    batch_vid = []
++    batch_clip = []
++    batch_label = []
++
++    for sample in batch:
++        batch_vid.append(sample[0])
++        batch_clip.append(sample[1])
++        batch_label.append(sample[2])
++    batch_clip = torch.stack(batch_clip, 0)
++    return batch_vid, batch_clip, batch_label
+diff --git a/main.py b/main.py
+new file mode 100755
+index 0000000..2753679
+--- /dev/null
++++ b/main.py
+@@ -0,0 +1,500 @@
++import os
++import argparse
++import random
++import warnings
++# import numpy as np
++from pathlib import Path
++# import time
++# import shutil
++
++# import wandb
++
++
++# Torch
++import torch
++import torch.utils.data as data
++import torch.nn as nn
++import torch.backends.cudnn as cudnn
++# import torch.multiprocessing as mp
++# import torch.distributed as dist
++import torch.nn.functional as F  # NOQA
++from torch.nn.utils import clip_grad_norm_
++from torch.optim.lr_scheduler import MultiStepLR
++
++# myrepo
++from model.video_net import VideoNet
++from config.config_utils import load_config
++from data.augmentation import (
++    # Base_ClipAug,
++    Train_ClipAug,
++    # Some_Train_ClipAug,
++    Test_ClipAug,
++)
++from data.dataset import DataRepo, data_collate
++from utils.utils import AverageMeter, accuracy
++# from utils.utils import reduce_tensor
++
++from tensorboardX import SummaryWriter
++
++
++best_acc1 = 0
++best_epoch = -1
++
++
++def get_args():
++    parser = argparse.ArgumentParser(description="PyTorch ViST")
++    parser.add_argument(
++        "--seed", default=None, type=int, help="seed for initializing training."
++    )
++    parser.add_argument(
++        "--start-epoch",
++        default=0,
++        type=int,
++        metavar="N",
++        help="manual epoch number (useful on restarts)",
++    )
++    parser.add_argument(
++        "-j",
++        "--workers",
++        default=8,
++        type=int,
++        metavar="N",
++        help="number of data loading workers (default: 4)",
++    )
++    parser.add_argument(
++        "--cfg", type=str, default="./config/custom/ssv1_vit_dense_config.yml"
++    )
++    parser.add_argument(
++        "--tune_from", type=str, default="", help="fine-tune from checkpoint"
++    )
++    parser.add_argument(
++        "--resume",
++        default="",
++        type=str,
++        metavar="PATH",
++        help="path to latest checkpoint (default: none)",
++    )
++    parser.add_argument(
++        "-e",
++        "--evaluate",
++        dest="evaluate",
++        action="store_true",
++        help="evaluate model on validation set",
++    )
++    parser.add_argument(
++        "--print-freq",
++        "-p",
++        default=10,
++        type=int,
++        metavar="N",
++        help="print frequency (default: 10)",
++    )
++    parser.add_argument("--gpu", default=0, type=int, help="GPU id to use.")
++    parser.add_argument(
++        "--cuda", type=int, nargs="*", default=[0, 1], help="Select the GPU to use"
++    )
++
++    args = parser.parse_args()
++    return args
++
++
++class LabelSmoothingCrossEntropy(nn.Module):
++    """
++    NLL loss with label smoothing.
++    """
++
++    def __init__(self, smoothing=0.1):
++        """
++        Constructor for the LabelSmoothing module.
++        :param smoothing: label smoothing factor
++        """
++        super(LabelSmoothingCrossEntropy, self).__init__()
++        assert smoothing < 1.0
++        self.smoothing = smoothing
++        self.confidence = 1.0 - smoothing
++
++    def forward(self, x, target):
++        logprobs = F.log_softmax(x, dim=-1)
++        nll_loss = -logprobs.gather(dim=-1, index=target.unsqueeze(1))
++        nll_loss = nll_loss.squeeze(1)
++        smooth_loss = -logprobs.mean(dim=-1)
++        loss = self.confidence * nll_loss + self.smoothing * smooth_loss
++        return loss.mean()
++
++
++def save_checkpoint(state, is_best, filename="checkpoint.pth.tar"):  # NOQA
++    torch.save(state, filename)
++
++
++def main():
++    args = get_args()
++    if args.seed is not None:
++        random.seed(args.seed)
++        torch.manual_seed(args.seed)
++        cudnn.deterministic = True
++        warnings.warn(
++            "You have chosen to seed training. "
++            "This will turn on the CUDNN deterministic setting, "
++            "which can slow down your training considerably! "
++            "You may see unexpected behavior when restarting "
++            "from checkpoints."
++        )
++    main_worker(args)
++
++
++def main_worker(args):
++    global best_acc1
++    global best_epoch
++    cfg = load_config(args.cfg)
++
++    # create model
++    model = VideoNet(
++        cfg["NUM_CLASS"],
++        cfg["T_SIZE"],
++        "RGB",
++        cfg["BASE_NET"],
++        cfg["NET"],
++        cfg["CONSENSUS_TYPE"],
++        cfg["DROP_OUT"],
++        cfg["PARTIAL_BN"],
++        cfg["PRINT_SPEC"],
++        cfg["PRETRAIN"],
++        cfg["IS_SHIFT"],
++        cfg["SHIFT_DIV"],
++        cfg["DROP_BLOCK"],
++        cfg["VAL_PATCH_SIZE"],
++        args.tune_from,
++        cfg=cfg,
++    )
++    print(model)
++
++    # define optimizer
++    policies = model.parameters()
++    cfg["WEIGHT_DECAY"] = float(cfg["WEIGHT_DECAY"])
++    optimizer = torch.optim.SGD(
++        policies, cfg["LR"], momentum=cfg["MOMENTUM"], weight_decay=cfg["WEIGHT_DECAY"]
++    )
++    scheduler = MultiStepLR(optimizer, milestones=cfg["LR_STEPS"], gamma=0.1)
++
++    # optionally resume from a checkpoint
++    if args.resume:
++        if os.path.isfile(args.resume):
++            print("=> loading checkpoint '{}'".format(args.resume))
++            checkpoint = torch.load(args.resume)
++            args.start_epoch = checkpoint["epoch"]
++            best_acc1 = checkpoint["best_acc1"]
++            model.load_state_dict(checkpoint["state_dict"])
++            optimizer.load_state_dict(checkpoint["optimizer"])
++            scheduler.step(args.start_epoch)
++            print(
++                "=> loaded checkpoint '{}' (epoch {})".format(
++                    args.resume, checkpoint["epoch"]
++                )
++            )
++            del checkpoint
++        else:
++            print("=> no checkpoint found at '{}'".format(args.resume))
++
++    if not torch.cuda.is_available():
++        print("using CPU, this will be slow")
++    else:
++        torch.cuda.set_device(args.gpu)
++        model = model.cuda(args.gpu)
++        model = torch.nn.DataParallel(model, device_ids=args.cuda)
++
++    # define loss function
++    if cfg["LABEL_SMOOTH"]:
++        criterion = LabelSmoothingCrossEntropy().cuda(args.gpu)
++    else:
++        criterion = torch.nn.CrossEntropyLoss().cuda(args.gpu)
++
++    cudnn.benchmark = True
++    pixel_mean = cfg["PIXEL_MEAN"]
++    pixel_std = cfg["PIXEL_STD"]
++
++    # data-loading code
++    test_aug_func = Test_ClipAug(
++        cfg["VAL_PATCH_SIZE"],
++        cfg["VAL_SHORT_SIDE"],
++        pixel_mean=pixel_mean,
++        pixel_std=pixel_std,
++        mode=cfg["VAL_TEST_AUG"],
++    )
++    # trn_aug_func  = Some_Train_ClipAug(cfg['TRN_PATCH_SIZE'],
++    trn_aug_func = Train_ClipAug(
++        cfg["TRN_PATCH_SIZE"],
++        cfg["TRN_SHORT_SIDE_RANGE"],
++        pixel_mean=pixel_mean,
++        pixel_std=pixel_std,
++    )
++
++    if args.evaluate:
++        cfg["VAL_SAMPLE_TIMES"] = 10
++    trn_data = DataRepo(cfg, is_train="train", aug=trn_aug_func)
++    val_data = DataRepo(cfg, is_train="val", aug=test_aug_func)
++    print("Amounts of Train/Validate = {}/{}".format(len(trn_data), len(val_data)))
++    trn_sampler = None
++    val_sampler = None
++    trn_loader = data.DataLoader(
++        trn_data,
++        cfg["TRN_BATCH"],
++        num_workers=args.workers,
++        shuffle=(trn_sampler is None),
++        collate_fn=data_collate,
++        sampler=trn_sampler,
++        drop_last=True,
++    )
++    val_loader = data.DataLoader(
++        val_data,
++        cfg["VAL_BATCH"],
++        num_workers=args.workers,
++        shuffle=(val_sampler is False),
++        collate_fn=data_collate,
++        sampler=val_sampler,
++    )
++    if args.evaluate:
++        cfg["epoch_lr"] = optimizer.param_groups[0]["lr"]
++        validate(
++            val_loader,
++            model,
++            criterion,
++            optimizer,
++            args.start_epoch - 1,
++            args,
++            cfg,
++            None,
++        )
++        return
++
++    store_name = "_".join(
++        [
++            # "D{}".format(time.strftime('%Y-%m-%d-%H',time.localtime(time.time()))),
++            cfg["NET"],
++            cfg["BASE_NET"],
++            cfg["DATASET"],
++            # 'ver{}'.format(cfg['VER']),
++            cfg["DENSE_OR_UNIFORM"],
++            "cls{}".format(cfg["NUM_CLASS"]),
++            "segs{}x{}".format(cfg["T_SIZE"], cfg["T_STEP"]),
++            "e{}".format(cfg["EPOCH"]),
++            "lr{}".format(cfg["LR"]),
++            "gd{}".format(cfg["CLIP_GD"]),
++            # "Shift{}".format(cfg['IS_SHIFT']),
++            "ShiftDiv{}".format(cfg["SHIFT_DIV"]),
++            "bch{}".format(cfg["TRN_BATCH"]),
++            "VAL{}".format(cfg["VAL_PATCH_SIZE"]),
++            # 'LableSmt{}'.format(cfg['LABEL_SMOOTH']),
++            # 'Mean0.5',
++        ]
++    )
++
++    tf_writer = None
++    print(store_name)
++    tf_writer = SummaryWriter(log_dir=os.path.join("./LOG/", store_name))
++    checkpoint_folder = Path("checkpoints") / store_name
++    checkpoint_folder.mkdir(parents=True, exist_ok=True)
++
++    for epoch in range(args.start_epoch, cfg["EPOCH"]):
++        cfg["epoch_lr"] = optimizer.param_groups[0]["lr"]
++
++        # train for one epoch
++        train(trn_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer)
++        # save checkpoint
++        print("Validating ...")
++        acc1 = validate(
++            val_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer
++        )
++        scheduler.step()
++        # remember best acc@1 and save checkpoint
++        is_best = acc1 > best_acc1
++        best_acc1 = max(acc1, best_acc1)
++        if tf_writer is not None and args.rank == 0:
++            tf_writer.add_scalar("Accuracy/best_test_top1", best_acc1, epoch)
++        if not args.multiprocessing_distributed or (
++            args.multiprocessing_distributed and args.rank == 0
++        ):
++            # save current epoch
++            pre_ckpt = checkpoint_folder / "ckpt_e{}.pth".format(epoch - 1)
++            if os.path.isfile(str(pre_ckpt)):
++                os.remove(str(pre_ckpt))
++            cur_ckpt = checkpoint_folder / "ckpt_e{}.pth".format(epoch)
++            save_checkpoint(
++                {
++                    "epoch": epoch + 1,
++                    "state_dict": model.state_dict(),
++                    "best_acc1": best_acc1,
++                    "optimizer": optimizer.state_dict(),
++                    "scheduler": scheduler.state_dict(),
++                },
++                is_best,
++                filename=cur_ckpt,
++            )
++
++            if is_best:
++                pre_filename = checkpoint_folder / "best_ckpt_e{}.pth".format(
++                    best_epoch
++                )
++                if os.path.isfile(str(pre_filename)):
++                    os.remove(str(pre_filename))
++
++                best_epoch = epoch
++                filename = checkpoint_folder / "best_ckpt_e{}.pth".format(best_epoch)
++                save_checkpoint(
++                    {
++                        "epoch": epoch + 1,
++                        "state_dict": model.state_dict(),
++                        "best_acc1": best_acc1,
++                        "optimizer": optimizer.state_dict(),
++                        "scheduler": scheduler.state_dict(),
++                    },
++                    is_best,
++                    filename=filename,
++                )
++    # wandb.finish()
++
++
++def train(
++    trn_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer, wandb=None
++):
++    losses = AverageMeter()
++    top1 = AverageMeter()
++    top5 = AverageMeter()
++
++    # switch to train mode
++    model.train()
++    trn_len = len(trn_loader)
++    for ii, (batch_vid, batch_clip, batch_label) in enumerate(trn_loader):
++        # 1. Data:  Batch x Time x Channel x H x W
++        #        Batch x Label
++        batch_label = torch.LongTensor(batch_label)
++        batch_label = batch_label.cuda(args.gpu, non_blocking=True)
++        batch_clip = batch_clip.cuda(args.gpu, non_blocking=True)
++        # print("target {}, clip {}".format(batch_label.shape, batch_clip.shape))
++        output = model(batch_clip)
++        loss = criterion(output, batch_label)
++        prec1, prec5 = accuracy(output.data, batch_label, topk=(1, 5))
++        if cfg["GRADIENT_ACCUMULATION_STEPS"] > 1:
++            loss = loss / cfg["GRADIENT_ACCUMULATION_STEPS"]
++        loss.backward()
++
++        # Gather Display
++        reduce_loss = loss.detach().data * cfg["GRADIENT_ACCUMULATION_STEPS"]
++        rprec1 = prec1.detach().data
++        rprec5 = prec5.detach().data
++
++        losses.update(reduce_loss.item())
++        top1.update(rprec1.item())
++        top5.update(rprec5.item())
++
++        # Accumultate Backprogate
++        if (ii + 1) % cfg["GRADIENT_ACCUMULATION_STEPS"] == 0 or ii == trn_len - 1:
++            if cfg["CLIP_GD"] > 0:
++                clip_grad_norm_(model.parameters(), cfg["CLIP_GD"])
++            optimizer.step()
++            optimizer.zero_grad()
++
++            # Display Progress
++            print(
++                "TRN Epoch [{}][{}/{}], lr {:.6f}, loss: {:.4f}, Acc1: {:.3f}, Acc5: {:.3f}".format(
++                    epoch,
++                    ii,
++                    trn_len,
++                    cfg["epoch_lr"],
++                    losses.avg,
++                    top1.avg,
++                    top5.avg,
++                )
++            )
++        # -----
++
++    del loss, output, batch_clip, batch_label, prec1, prec5, reduce_loss
++    if tf_writer is not None and args.rank == 0:
++        tf_writer.add_scalar("Loss/train", losses.avg, epoch)
++        tf_writer.add_scalar("LearningRate", cfg["epoch_lr"], epoch)
++        tf_writer.add_scalar("Accuracy/train_top1", top1.avg, epoch)
++        tf_writer.add_scalar("Accuracy/train_top5", top5.avg, epoch)
++    # if wandb != None and args.rank == 0:
++    # wandb.log({'epoch': epoch, 'train_loss': losses.avg, 'train_top1': top1.avg, "train_top5": top5.avg})
++
++
++def validate(
++    val_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer, wandb=None
++):
++    losses = AverageMeter()
++    top1 = AverageMeter()
++    top5 = AverageMeter()
++
++    # switch to train mode
++    model.eval()
++    val_len = len(val_loader)
++    with torch.no_grad():
++        for ii, (batch_vid, batch_clip, batch_label) in enumerate(val_loader):
++            # 1. Data:  Batch x Mode x Time x Channel x H x W
++            #        Batch x Label
++            batch_label = torch.LongTensor(batch_label)
++            batch_label = batch_label.cuda(args.gpu, non_blocking=True)
++            batch_clip = batch_clip.cuda(args.gpu, non_blocking=True)
++            Batch, M, T, C, H, W = batch_clip.shape
++            # print("target {}, clip {}".format(batch_label.shape, batch_clip.shape))
++            batch_clip = batch_clip.view(-1, T, C, H, W)
++            batch_label_dup = batch_label.unsqueeze(0).repeat(M, 1)
++            batch_label_dup = batch_label_dup.permute(1, 0).contiguous().view(-1)
++
++            output = model(batch_clip)
++            loss = criterion(output, batch_label_dup)
++            output = output.view(Batch, M, output.size(-1))
++            # Average across M
++            output = output.view(Batch, M, output.size(-1))
++            output = output.mean(1)
++
++            prec1, prec5 = accuracy(output.data, batch_label, topk=(1, 5))
++
++            # Gather Display
++            reduce_loss = loss.detach().data
++            rprec1 = prec1.detach().data
++            rprec5 = prec5.detach().data
++
++            losses.update(reduce_loss.item(), Batch)
++            top1.update(rprec1.item(), Batch)
++            top5.update(rprec5.item(), Batch)
++
++            # Accumultate Backprogate
++            if ii % args.print_freq == 0 or ii == val_len - 1:
++                # Display Progress
++                if args.rank == 0:
++                    print(
++                        "Val Epoch [{}][{}/{}], lr {:.6f}, loss: {:.4f}, Acc1 {:.3f}, Acc5 {:.3f}".format(
++                            epoch,
++                            ii,
++                            val_len,
++                            cfg["epoch_lr"],
++                            losses.avg,
++                            top1.avg,
++                            top5.avg,
++                        )
++                    )
++            # -----
++
++        del (
++            loss,
++            output,
++            batch_clip,
++            batch_label,
++            prec1,
++            prec5,
++            reduce_loss,
++            rprec1,
++            rprec5,
++        )
++        if tf_writer is not None and args.rank == 0:
++            tf_writer.add_scalar("Loss/test", losses.avg, epoch)
++            tf_writer.add_scalar("Accuracy/test_top1", top1.avg, epoch)
++            tf_writer.add_scalar("Accuracy/test_top5", top5.avg, epoch)
++
++    print("Evaluate Val {}: loss {}, top1 {} ".format(epoch, losses.avg, top1.avg))
++    print("--" * 10)
++    return top1.avg
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/main_ddp_shift_v3.py b/main_ddp_shift_v3.py
+deleted file mode 100755
+index e30a191..0000000
+--- a/main_ddp_shift_v3.py
++++ /dev/null
+@@ -1,499 +0,0 @@
+-import os
+-import argparse
+-import random
+-import warnings
+-import numpy as np
+-from pathlib import Path
+-import time
+-import shutil
+-#import wandb
+-
+-
+-# Torch
+-import torch
+-import torch.utils.data as data
+-import torch.nn as nn
+-import torch.backends.cudnn as cudnn
+-import torch.multiprocessing as mp
+-import torch.distributed as dist
+-import torch.nn.functional as F
+-from torch.nn.utils import clip_grad_norm_
+-from torch.optim.lr_scheduler import MultiStepLR
+-# myrepo
+-from model.video_net import VideoNet 
+-from config.config_utils import load_config	   
+-from data.augmentation import Base_ClipAug, Train_ClipAug, Some_Train_ClipAug, Test_ClipAug
+-from data.dataset import DataRepo, data_collate
+-from utils.utils import AverageMeter, accuracy 
+-from utils.utils import reduce_tensor
+-
+-from tensorboardX import SummaryWriter
+-
+-
+-best_acc1 = 0
+-best_epoch = -1
+-def get_args():
+-	parser = argparse.ArgumentParser(description="PyTorch ViST")
+-	parser.add_argument('--seed', default=None, type=int,
+-						help='seed for initializing training.')
+-	parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
+-					help='manual epoch number (useful on restarts)')
+-	parser.add_argument('-j', '--workers', default=8, type=int, metavar='N',
+-						help='number of data loading workers (default: 4)')
+-	parser.add_argument('--gpu', default=None, type=int,
+-					help='GPU id to use.')
+-	parser.add_argument('--rank', default=-1, type=int,
+-					help='node rank for distributed training')
+-	parser.add_argument('--dist-url', default='tcp://127.0.0.1:33456', type=str,
+-					help='url used to set up distributed training')
+-	parser.add_argument('--world-size', default=-1, type=int,
+-					help='number of nodes for distributed training')
+-	parser.add_argument('--multiprocessing-distributed', action='store_true',
+-					help='Use multi-processing distributed training to launch '
+-						 'N processes per node, which has N GPUs. This is the '
+-						 'fastest way to use PyTorch for either single node or '
+-						 'multi node data parallel training')
+-	parser.add_argument('--dist-backend', default='nccl', type=str,
+-					help='distributed backend')
+-	parser.add_argument("--cfg", type=str, 
+-						default="./config/custom/ssv1_vit_dense_config.yml")
+-	parser.add_argument('--tune_from', type=str, 
+-						default="", help='fine-tune from checkpoint')
+-	parser.add_argument('--resume', default='', type=str, metavar='PATH',
+-					help='path to latest checkpoint (default: none)')
+-	parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
+-					help='evaluate model on validation set')
+-	parser.add_argument('--print-freq', '-p', default=10, type=int, 
+-		metavar='N', help='print frequency (default: 10)')
+-	
+-
+-	args = parser.parse_args()
+-	return args
+-
+-
+-class LabelSmoothingCrossEntropy(nn.Module):
+-	""" 
+-	NLL loss with label smoothing.
+-	"""
+-	def __init__(self, smoothing=0.1):
+-		"""
+-		Constructor for the LabelSmoothing module.
+-		:param smoothing: label smoothing factor
+-		"""
+-		super(LabelSmoothingCrossEntropy, self).__init__()								
+-		assert smoothing < 1.0 
+-		self.smoothing = smoothing
+-		self.confidence = 1. - smoothing
+-
+-	def forward(self, x, target):
+-		logprobs = F.log_softmax(x, dim=-1)
+-		nll_loss = -logprobs.gather(dim=-1, index=target.unsqueeze(1))
+-		nll_loss = nll_loss.squeeze(1)
+-		smooth_loss = -logprobs.mean(dim=-1)
+-		loss = self.confidence * nll_loss + self.smoothing * smooth_loss
+-		return loss.mean()
+-
+-
+-def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
+-    torch.save(state, filename)
+-
+-
+-def main():
+-	args = get_args()
+-	if args.seed is not None:
+-		random.seed(args.seed)		
+-		torch.manual_seed(args.seed)
+-		cudnn.deterministic = True
+-		warnings.warn('You have chosen to seed training. '
+-					  'This will turn on the CUDNN deterministic setting, '
+-					  'which can slow down your training considerably! '
+-					  'You may see unexpected behavior when restarting '
+-					  'from checkpoints.')
+-
+-	if args.gpu is not None:
+-		warnings.warn('You have chosen a specific GPU. This will completely '
+-					  'disable data parallelism.')
+-
+-	if args.dist_url == "env://" and args.world_size == -1:
+-		args.world_size = int(os.environ["WORLD_SIZE"])
+-
+-	args.distributed = args.world_size > 1 or args.multiprocessing_distributed
+-	ngpus_per_node = torch.cuda.device_count()
+-	if args.distributed:
+-		print("Using Distribued mode with world-size {}, {} gpus/node".format(args.world_size,
+-					ngpus_per_node))
+-	if args.multiprocessing_distributed:
+-		# Since we have ngpus_per_node processes per node, the total world_zie
+-		# needs to be adjusted accordingly
+-		args.world_size= ngpus_per_node * args.world_size
+-		# Use torch.multiprocessing.spawn to launch distributed process: the
+-		# main_worker process function
+-		mp.spawn(main_worker, nprocs=ngpus_per_node, args=(ngpus_per_node, args))
+-	else:
+-		# Simply call main_worker function
+-		main_worker(args.gpu, ngpus_per_node, args)
+-
+-	print("Process Finished")
+-
+-
+-def main_worker(gpu, ngpus_per_node, args):
+-	global best_acc1
+-	global best_epoch
+-	args.gpu = gpu
+-	cfg  = load_config(args.cfg)
+-	if args.gpu is not None:
+-		print("Use GPU: {} for training".format(args.gpu))
+-
+-	if args.distributed:
+-		if args.dist_url == "env://" and args.rank == -1:
+-			args.rank = int(os.environ["RANK"])
+-		if args.multiprocessing_distributed:
+-			# For multiprocessing distributed training, rank needs to be the
+-			# global rank among all the processes
+-			args.rank = args.rank * ngpus_per_node + gpu
+-		dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
+-			world_size=args.world_size, rank=args.rank)
+-
+-	# create model
+-	model = VideoNet(cfg['NUM_CLASS'], cfg['T_SIZE'], 'RGB',
+-				cfg['BASE_NET'], cfg['NET'],
+-				cfg['CONSENSUS_TYPE'],
+-				cfg['DROP_OUT'], cfg['PARTIAL_BN'],
+-				cfg['PRINT_SPEC'], cfg['PRETRAIN'],
+-				cfg['IS_SHIFT'], cfg['SHIFT_DIV'],
+-				cfg['DROP_BLOCK'],
+-				cfg['VAL_PATCH_SIZE'], args.tune_from, cfg=cfg)
+-	print(model)
+-
+-	if not torch.cuda.is_available():
+-		print('using CPU, this will be slow')
+-	elif args.distributed:
+-		# For multiprocessing distributed, DistributedDataParallel constr
+-		# should always set the single device scope, otherwise,
+-		# DistributedDataParallel will use all available devices.
+-		if args.gpu is not None:
+-			print('Mode1')
+-			torch.cuda.set_device(args.gpu)
+-			model.cuda(args.gpu)
+-			# When using a single GPU per process and per
+-			# DistributedDataParallel, we need to divide the batch size
+-			# ourselves based on the total number of GPUs we have
+-			#batch_size = int(cfg['TRN_BATCH'] / ngpus_per_node) 
+-			#workers = int((args.workers + ngpus_per_node - 1) / ngpus_per_node)
+-			#print("gpuBatch {}, gpuWorker {}".format(batch_size, workers))
+-			model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+-		else:
+-			print('Mode2')
+-			model.cuda()
+-			# DistributedDataParallel will divide and allocate batch_size to all
+-			# available GPUs if device_ids are not set
+-			model = torch.nn.parallel.DistributedDataParallel(model)
+-	elif args.gpu is not None:
+-		torch.cuda.set_device(args.gpu)
+-		model = model.cuda(args.gpu)
+-
+-	# define loss function
+-	if cfg['LABEL_SMOOTH']:
+-		criterion = LabelSmoothingCrossEntropy().cuda(args.gpu)
+-	else:
+-		criterion = torch.nn.CrossEntropyLoss().cuda(args.gpu)
+-
+-	# define optimizer
+-	policies = model.parameters()
+-	cfg['WEIGHT_DECAY'] = float(cfg['WEIGHT_DECAY'])
+-	optimizer = torch.optim.SGD(policies, 
+-				    cfg['LR'],
+-				    momentum=cfg['MOMENTUM'],
+-				    weight_decay=cfg['WEIGHT_DECAY'])
+-	scheduler = MultiStepLR(optimizer, milestones=cfg['LR_STEPS']
+-				,gamma=0.1)
+-
+-
+-	# optionally resume from a checkpoint
+-	if args.resume:
+-		if os.path.isfile(args.resume):
+-			print("=> loading checkpoint '{}'".format(args.resume))
+-			if args.gpu is None:
+-				checkpoint = torch.load(args.resume)
+-			else:
+-				# Map model to be loaded to specified single gpu.
+-				loc = 'cuda:{}'.format(args.gpu)
+-				checkpoint = torch.load(args.resume, map_location=loc)
+-			args.start_epoch = checkpoint['epoch']
+-			best_acc1 = checkpoint['best_acc1']
+-			#if args.gpu is not None:
+-			#	# best_acc1 may be from a checkpoint from a different GPU
+-			#	best_acc1 = best_acc1.to(args.gpu)
+-			model.load_state_dict(checkpoint['state_dict'])
+-			optimizer.load_state_dict(checkpoint['optimizer'])
+-			#scheduler.load_state_dict(checkpoint['scheduler'])
+-			scheduler.step(args.start_epoch)
+-			print("=> loaded checkpoint '{}' (epoch {})"
+-				.format(args.resume, checkpoint['epoch']))
+-			del checkpoint
+-
+-		else:
+-			print("=> no checkpoint found at '{}'".format(args.resume))
+-	cudnn.benchmark = True
+-	pixel_mean = cfg['PIXEL_MEAN']
+-	pixel_std = cfg['PIXEL_STD']
+-
+-	# data-loading code
+-	test_aug_func = Test_ClipAug(cfg['VAL_PATCH_SIZE'],
+-								cfg['VAL_SHORT_SIDE'],
+-								pixel_mean=pixel_mean,
+-								pixel_std=pixel_std,
+-								mode=cfg['VAL_TEST_AUG'])
+-	#trn_aug_func  = Some_Train_ClipAug(cfg['TRN_PATCH_SIZE'],
+-	trn_aug_func  = Train_ClipAug(cfg['TRN_PATCH_SIZE'],
+-								cfg['TRN_SHORT_SIDE_RANGE'],
+-								pixel_mean=pixel_mean,
+-								pixel_std=pixel_std,
+-								)
+-
+-	if args.evaluate:
+-		cfg["VAL_SAMPLE_TIMES"] = 10
+-	trn_data = DataRepo(cfg, is_train='train', aug=trn_aug_func)
+-	val_data = DataRepo(cfg, is_train='val', aug=test_aug_func)
+-	print("Amounts of Train/Validate = {}/{}".format(len(trn_data),
+-													len(val_data)))
+-	if args.distributed:
+-		trn_sampler = torch.utils.data.distributed.DistributedSampler(trn_data)
+-		val_sampler = torch.utils.data.distributed.DistributedSampler(val_data, shuffle=False)
+-	else:								
+-		trn_sampler = None
+-		val_sampler = None
+-	trn_loader = data.DataLoader(trn_data, cfg['TRN_BATCH'],
+-				    num_workers=args.workers, shuffle=(trn_sampler is None),
+-				    collate_fn=data_collate, pin_memory=True,
+-				    sampler=trn_sampler, drop_last=True)
+-	val_loader = data.DataLoader(val_data, cfg['VAL_BATCH'],
+-				    num_workers=args.workers, shuffle=(val_sampler is False),
+-				    collate_fn=data_collate, pin_memory=True,
+-				    sampler=val_sampler)
+-	if args.evaluate:
+-		cfg['epoch_lr'] = optimizer.param_groups[0]['lr']
+-		validate(val_loader, model, criterion, optimizer, args.start_epoch-1, args, cfg, None)
+-		return
+-
+-	store_name = '_'.join(
+-	[
+-	#"D{}".format(time.strftime('%Y-%m-%d-%H',time.localtime(time.time()))),
+-	cfg['NET'],
+-	cfg['BASE_NET'],
+-	cfg['DATASET'],
+-	#'ver{}'.format(cfg['VER']),
+-	cfg['DENSE_OR_UNIFORM'],
+-	'cls{}'.format(cfg['NUM_CLASS']),
+-	'segs{}x{}'.format(cfg['T_SIZE'], cfg['T_STEP']),
+-	'e{}'.format(cfg['EPOCH']),
+-	'lr{}'.format(cfg['LR']),
+-	'gd{}'.format(cfg['CLIP_GD']),
+-	#"Shift{}".format(cfg['IS_SHIFT']),
+-	"ShiftDiv{}".format(cfg['SHIFT_DIV']),
+-	"bch{}".format(cfg['TRN_BATCH']),
+-	"VAL{}".format(cfg['VAL_PATCH_SIZE']),
+-	#'LableSmt{}'.format(cfg['LABEL_SMOOTH']),
+-	#'Mean0.5',
+-	]
+-	)
+-	#wandb.init(project="{}".format(store_name), config={
+-        #"NET": cfg['NET'],
+-        #"BASE_NET": cfg["BASE_NET"],
+-        #"DATASET": cfg['DATASET'],
+-        #"DENSE_OR_UNIFORM": cfg["DENSE_OR_UNIFORM"],
+-        #"CLASS": cfg["NUM_CLASS"],
+-        #"T_SIZE": cfg["T_SIZE"],
+-        #"T_STEP": cfg["T_STEP"],
+-        #"Epoch": cfg["EPOCH"],
+-        #"Lr": cfg["LR"],
+-        #"ShiftDiv": cfg["SHIFT_DIV"],
+-        #"Batch":  cfg["TRN_BATCH"],
+-        #"VAL": cfg["VAL_PATCH_SIZE"],
+-        #})
+-        #wandb_cfg = wandb.config
+-
+-	tf_writer = None
+-	print(store_name)
+-	if args.rank == 0:
+-		tf_writer = SummaryWriter(log_dir=os.path.join("./LOG/", store_name))
+-		checkpoint_folder = Path('checkpoints') / store_name
+-		checkpoint_folder.mkdir(parents=True, exist_ok=True)
+-
+-	for epoch in range(args.start_epoch, cfg['EPOCH']):
+-		if args.distributed:
+-			trn_sampler.set_epoch(epoch)
+-
+-		#cfg['epoch_lr'] = scheduler.get_last_lr()[0]
+-		cfg['epoch_lr'] = optimizer.param_groups[0]['lr']
+-		
+-		# train for one epoch
+-		train(trn_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer)
+-		# save checkpoint
+-		print("Validating ...")
+-		acc1 = validate(val_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer)
+-		scheduler.step()
+-		# remember best acc@1 and save checkpoint
+-		is_best = acc1 > best_acc1
+-		best_acc1 = max(acc1, best_acc1)		
+-		if tf_writer != None and args.rank == 0:
+-			tf_writer.add_scalar('Accuracy/best_test_top1', best_acc1, epoch)
+-		if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank==0):
+-			# save current epoch
+-			pre_ckpt = checkpoint_folder / "ckpt_e{}.pth".format(epoch-1)
+-			if os.path.isfile(str(pre_ckpt)):
+-				os.remove(str(pre_ckpt))
+-			cur_ckpt = checkpoint_folder / "ckpt_e{}.pth".format(epoch)
+-			save_checkpoint({
+-					'epoch': epoch + 1,
+-					'state_dict': model.state_dict(),
+-					'best_acc1': best_acc1,
+-					'optimizer' : optimizer.state_dict(),
+-					'scheduler' : scheduler.state_dict(),
+-					}, is_best, filename=cur_ckpt)
+-		
+-			if is_best:
+-				pre_filename = checkpoint_folder / "best_ckpt_e{}.pth".format(best_epoch)
+-				if os.path.isfile(str(pre_filename)):
+-					os.remove(str(pre_filename))
+-
+-				best_epoch = epoch
+-				filename = checkpoint_folder / "best_ckpt_e{}.pth".format(best_epoch)
+-				save_checkpoint({
+-					'epoch': epoch + 1,
+-					'state_dict': model.state_dict(),
+-					'best_acc1': best_acc1,
+-					'optimizer' : optimizer.state_dict(),
+-					'scheduler' : scheduler.state_dict(),
+-					}, is_best, filename=filename)
+-        #wandb.finish()
+-
+-
+-def train(trn_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer, wandb=None):
+-	losses     = AverageMeter()
+-	top1       = AverageMeter()
+-	top5       = AverageMeter()
+-
+-	# switch to train mode
+-	model.train()
+-	trn_len = len(trn_loader)
+-	for ii, (batch_vid, batch_clip, batch_label) in enumerate(trn_loader):
+-		# 1. Data:  Batch x Time x Channel x H x W
+-		#        Batch x Label
+-		batch_label = torch.LongTensor(batch_label)
+-		if args.gpu is not None:
+-			batch_label = batch_label.cuda(args.gpu, non_blocking=True)
+-			batch_clip  = batch_clip.cuda(args.gpu, non_blocking=True)
+-			#print("target {}, clip {}".format(batch_label.shape, batch_clip.shape))
+-			output = model(batch_clip)
+-			loss = criterion(output, batch_label)
+-			prec1, prec5 = accuracy(output.data, batch_label, topk=(1,5)) 
+-			if cfg['GRADIENT_ACCUMULATION_STEPS'] > 1:
+-				loss = loss / cfg['GRADIENT_ACCUMULATION_STEPS']
+-			loss.backward()
+-
+-			# Gather Display
+-			if args.distributed:
+-				reduce_loss = reduce_tensor(args, loss.data * cfg['GRADIENT_ACCUMULATION_STEPS'])
+-				rprec1 = reduce_tensor(args, prec1)
+-				rprec5 = reduce_tensor(args, prec5)
+-			else:
+-				reduce_loss = loss.detach().data * cfg['GRADIENT_ACCUMULATION_STEPS']
+-				rprec1 = prec1.detach().data
+-				rprec5 = prec5.detach().data
+-
+-			losses.update(reduce_loss.item())
+-			top1.update(rprec1.item())
+-			top5.update(rprec5.item())
+-			
+-
+-			### Accumultate Backprogate
+-			if (ii + 1) % cfg['GRADIENT_ACCUMULATION_STEPS'] == 0 or ii == trn_len - 1:
+-				if cfg['CLIP_GD'] > 0:
+-					clip_grad_norm_(model.parameters(), cfg['CLIP_GD'])
+-				optimizer.step()
+-				optimizer.zero_grad()
+-
+-				# Display Progress
+-				if args.rank == 0:
+-					print("TRN Epoch [{}][{}/{}], lr {:.6f}, loss: {:.4f}, Acc1: {:.3f}, Acc5: {:.3f}".format(epoch, ii, trn_len, cfg['epoch_lr'], losses.avg, top1.avg, top5.avg))
+-			###-----
+-
+-
+-	del loss, output, batch_clip, batch_label, prec1, prec5, reduce_loss
+-	if tf_writer != None and args.rank == 0:
+-		tf_writer.add_scalar('Loss/train', losses.avg, epoch)
+-		tf_writer.add_scalar('LearningRate', cfg['epoch_lr'], epoch)
+-		tf_writer.add_scalar('Accuracy/train_top1', top1.avg, epoch)
+-		tf_writer.add_scalar('Accuracy/train_top5', top5.avg, epoch)
+-	#if wandb != None and args.rank == 0:
+-	#	wandb.log({'epoch': epoch, 'train_loss': losses.avg, 'train_top1': top1.avg, "train_top5": top5.avg})
+-
+-
+-def validate(val_loader, model, criterion, optimizer, epoch, args, cfg, tf_writer, wandb=None):
+-	losses     = AverageMeter()
+-	top1       = AverageMeter()
+-	top5       = AverageMeter()
+-
+-	# switch to train mode
+-	model.eval()
+-	val_len = len(val_loader)
+-	with torch.no_grad():
+-		for ii, (batch_vid, batch_clip, batch_label) in enumerate(val_loader):
+-			# 1. Data:  Batch x Mode x Time x Channel x H x W
+-			#        Batch x Label
+-			batch_label = torch.LongTensor(batch_label)
+-			if args.gpu is not None:
+-				batch_label = batch_label.cuda(args.gpu, non_blocking=True)
+-				batch_clip  = batch_clip.cuda(args.gpu, non_blocking=True)
+-				Batch, M, T, C, H, W = batch_clip.shape
+-				#print("target {}, clip {}".format(batch_label.shape, batch_clip.shape))
+-				batch_clip = batch_clip.view(-1, T, C, H, W)
+-				batch_label_dup = batch_label.unsqueeze(0).repeat(M,1)
+-				batch_label_dup = batch_label_dup.permute(1,0).contiguous().view(-1)
+-				
+-				output = model(batch_clip)
+-				loss = criterion(output, batch_label_dup)
+-				output = output.view(Batch, M, output.size(-1))
+-				# Average across M
+-				output = output.view(Batch, M, output.size(-1))
+-				output = output.mean(1)
+-
+-				prec1, prec5 = accuracy(output.data, batch_label, topk=(1,5)) 
+-
+-				# Gather Display
+-				if args.distributed:
+-					reduce_loss = reduce_tensor(args, loss.data)
+-					rprec1 = reduce_tensor(args, prec1)
+-					rprec5 = reduce_tensor(args, prec5)
+-				else:
+-					reduce_loss = loss.detach().data
+-					rprec1 = prec1.detach().data
+-					rprec5 = prec5.detach().data
+-
+-				losses.update(reduce_loss.item(), Batch)
+-				top1.update(rprec1.item(), Batch)
+-				top5.update(rprec5.item(), Batch)
+-				
+-
+-				### Accumultate Backprogate
+-				if ii  % args.print_freq == 0 or ii == val_len - 1:
+-					# Display Progress
+-					if args.rank == 0:
+-						print("Val Epoch [{}][{}/{}], lr {:.6f}, loss: {:.4f}, Acc1 {:.3f}, Acc5 {:.3f}".format(epoch, ii, val_len, cfg['epoch_lr'], losses.avg, top1.avg, top5.avg))
+-				###-----
+-
+-
+-		del loss, output, batch_clip, batch_label, prec1, prec5, reduce_loss, rprec1, rprec5
+-		if tf_writer != None and args.rank == 0:
+-			tf_writer.add_scalar('Loss/test', losses.avg, epoch)
+-			tf_writer.add_scalar('Accuracy/test_top1', top1.avg, epoch)
+-			tf_writer.add_scalar('Accuracy/test_top5', top5.avg, epoch)
+-	
+-	print("Evaluate Val {}: loss {}, top1 {} ".format(epoch, losses.avg, top1.avg))
+-	print("--"*10)
+-	return top1.avg
+-
+-if __name__ == "__main__":
+-	main()
+-
+diff --git a/model/video_net.py b/model/video_net.py
+index 51382b8..bfcfdef 100644
+--- a/model/video_net.py
++++ b/model/video_net.py
+@@ -8,116 +8,122 @@ import sys
+ from importlib import import_module
+ sys.path.append('..')
+ 
+-class VideoNet(nn.Module):
+-	def __init__(self, num_class, num_segments, modality,
+-				backbone='ViT-B_16', net=None, consensus_type='avg',
+-				dropout=0.5, partial_bn=True, print_spec=True, pretrain='imagenet',
+-				is_shift=False, shift_div=8,
+-			        drop_block=0, vit_img_size=224,
+-				vit_pretrain="", LayerNormFreeze=2, cfg=None):
+-		super(VideoNet, self).__init__()
+-		self.num_segments = num_segments
+-		self.modality = modality
+-		self.backbone = backbone
+-		self.net = net
+-		self.dropout = dropout
+-		self.pretrain = pretrain
+-		self.consensus_type = consensus_type
+-		self.drop_block = drop_block
+-		self.init_crop_size = 256
+-		self.vit_img_size=vit_img_size
+-		self.vit_pretrain=vit_pretrain
+-
+-		self.is_shift = is_shift
+-		self.shift_div = shift_div
+-		self.backbone = backbone
+-		
+-		self.num_class = num_class
+-		self.cfg = cfg
+-		self._prepare_base_model(backbone)
+-		if "resnet" in self.backbone:
+-			self._prepare_fc(num_class)
+-		self.consensus = ConsensusModule(consensus_type)
+-		#self.softmax = nn.Softmax()
+-		self._enable_pbn = partial_bn
+-		self.LayerNormFreeze = LayerNormFreeze
+-		if partial_bn:
+-			self.partialBN(True)
+ 
+-	def _prepare_base_model(self, backbone):
+-		if 'ViT' in backbone:
+-			if self.net == 'ViT':
+-				print('=> base model: ViT, with backbone: {}'.format(backbone))
+-				from vit_models.modeling import VisionTransformer, CONFIGS
+-				vit_cfg = CONFIGS[backbone]
+-				self.base_model = VisionTransformer(vit_cfg, self.vit_img_size,
+-									zero_head=True, num_classes=self.num_class)
+-			elif self.net == 'TokShift':
+-				print('=> base model: TokShift, with backbone: {}'.format(backbone))
+-				from vit_models.modeling_tokshift import VisionTransformer, CONFIGS
+-				vit_cfg = CONFIGS[backbone]
+-				vit_cfg.n_seg = self.num_segments
+-				vit_cfg.fold_div = self.shift_div
+-				self.base_model = VisionTransformer(vit_cfg, self.vit_img_size,
+-									zero_head=True, num_classes=self.num_class)
+-			if self.vit_pretrain != "":
+-				print("ViT pretrain weights: {}".format(self.vit_pretrain))
+-				self.base_model.load_from(np.load(self.vit_pretrain))
+-			self.feature_dim=self.num_class
++class VideoNet(nn.Module):
++    def __init__(self, num_class, num_segments, modality,
++                 backbone='ViT-B_16', net=None, consensus_type='avg',
++                 dropout=0.5, partial_bn=True, print_spec=True, pretrain='imagenet',
++                 is_shift=False, shift_div=8,
++                 drop_block=0, vit_img_size=224,
++                 vit_pretrain="", LayerNormFreeze=2, cfg=None):
++        super(VideoNet, self).__init__()
++        self.num_segments = num_segments
++        self.modality = modality
++        self.backbone = backbone
++        self.net = net
++        self.dropout = dropout
++        self.pretrain = pretrain
++        self.consensus_type = consensus_type
++        self.drop_block = drop_block
++        self.init_crop_size = 256
++        self.vit_img_size = vit_img_size
++        self.vit_pretrain = vit_pretrain
+ 
+-		else:
+-			raise ValueError('Unknown backbone: {}'.format(backbone))
++        self.is_shift = is_shift
++        self.shift_div = shift_div
++        self.backbone = backbone
+ 
++        self.num_class = num_class
++        self.cfg = cfg
++        self._prepare_base_model(backbone)
++        if "resnet" in self.backbone:
++            self._prepare_fc(num_class)
++        self.consensus = ConsensusModule(consensus_type)
++        # self.softmax = nn.Softmax()
++        self._enable_pbn = partial_bn
++        self.LayerNormFreeze = LayerNormFreeze
++        if partial_bn:
++            self.partialBN(True)
+ 
+-	def _prepare_fc(self, num_class):
+-		if self.dropout == 0:
+-			setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(self.feature_dim, num_class))
+-			self.new_fc = None
+-		else:
+-			setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
+-			self.new_fc = nn.Linear(self.feature_dim, num_class)
++    def _prepare_base_model(self, backbone):
++        if 'ViT' in backbone:
++            if self.net == 'ViT':
++                print('=> base model: ViT, with backbone: {}'.format(backbone))
++                from vit_models.modeling import VisionTransformer, CONFIGS
++                vit_cfg = CONFIGS[backbone]
++                self.base_model = VisionTransformer(vit_cfg, self.vit_img_size,
++                                                    zero_head=True, num_classes=self.num_class)
++            elif self.net == 'TokShift':
++                print('=> base model: TokShift, with backbone: {}'.format(backbone))
++                from vit_models.modeling_tokshift import VisionTransformer, CONFIGS
++                vit_cfg = CONFIGS[backbone]
++                vit_cfg.n_seg = self.num_segments
++                vit_cfg.fold_div = self.shift_div
++                self.base_model = VisionTransformer(vit_cfg, self.vit_img_size,
++                                                    zero_head=True, num_classes=self.num_class)
++            elif self.net == 'AttentionShift':
++                print('=> base model: AttentionShift, with backbone: {}'.format(backbone))
++                from vit_models.modeling_attentionshift import VisionTransformer, CONFIGS
++                vit_cfg = CONFIGS[backbone]
++                vit_cfg.n_seg = self.num_segments
++                vit_cfg.fold_div = self.shift_div
++                self.base_model = VisionTransformer(vit_cfg, self.vit_img_size,
++                                                    zero_head=True, num_classes=self.num_class)
++            if self.vit_pretrain != "":
++                print("ViT pretrain weights: {}".format(self.vit_pretrain))
++                self.base_model.load_from(np.load(self.vit_pretrain))
++            self.feature_dim = self.num_class
+ 
+-		std = 0.001
+-		if self.new_fc is None:
+-			normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
+-			constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
+-		else:
+-			if hasattr(self.new_fc, 'weight'):
+-				normal_(self.new_fc.weight, 0, std)
+-				constant_(self.new_fc.bias, 0)
++        else:
++            raise ValueError('Unknown backbone: {}'.format(backbone))
+ 
+-	#
+-	def train(self, mode=True):
+-		# Override the default train() to freeze the BN parameters
+-		super(VideoNet, self).train(mode)
+-		count = 0
+-		if self._enable_pbn and mode:
+-			print("Freezing LayerNorm.")
+-			for m in self.base_model.modules():
+-				if isinstance(m, nn.LayerNorm):
+-					count += 1
+-					if count >= (self.LayerNormFreeze if self._enable_pbn else 1):
+-						m.eval()
+-						print("Freeze {}".format(m))
+-						# shutdown update in frozen mode
+-						m.weight.requires_grad = False
+-						m.bias.requires_grad = False
++    def _prepare_fc(self, num_class):
++        if self.dropout == 0:
++            setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(self.feature_dim, num_class))
++            self.new_fc = None
++        else:
++            setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
++            self.new_fc = nn.Linear(self.feature_dim, num_class)
+ 
++        std = 0.001
++        if self.new_fc is None:
++            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
++            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
++        else:
++            if hasattr(self.new_fc, 'weight'):
++                normal_(self.new_fc.weight, 0, std)
++                constant_(self.new_fc.bias, 0)
+ 
+-	#
+-	def partialBN(self, enable):
+-		self._enable_pbn = enable
++    #
++    def train(self, mode=True):
++        # Override the default train() to freeze the BN parameters
++        super(VideoNet, self).train(mode)
++        count = 0
++        if self._enable_pbn and mode:
++            print("Freezing LayerNorm.")
++            for m in self.base_model.modules():
++                if isinstance(m, nn.LayerNorm):
++                    count += 1
++                    if count >= (self.LayerNormFreeze if self._enable_pbn else 1):
++                        m.eval()
++                        print("Freeze {}".format(m))
++                        # shutdown update in frozen mode
++                        m.weight.requires_grad = False
++                        m.bias.requires_grad = False
+ 
++    #
+ 
+-	def forward(self, input):
+-		# input size [batch_size, num_segments, 3, h, w]
+-		input = input.view((-1, 3) + input.size()[-2:])
+-		if 'ViT' in self.backbone:
+-			base_out, atten = self.base_model(input)
+-			base_out = base_out.view((-1,self.num_segments)+base_out.size()[1:])
+-			#print("Baseout {}".format(base_out.shape))
+-			#print(base_out[0,:,1:10])
+-		#
+-		output = self.consensus(base_out)
+-		return output.squeeze(1)
++    def partialBN(self, enable):
++        self._enable_pbn = enable
+ 
++    def forward(self, input):
++        # input size [batch_size, num_segments, 3, h, w]
++        input = input.view((-1, 3) + input.size()[-2:])
++        if 'ViT' in self.backbone:
++            base_out, atten = self.base_model(input)
++            base_out = base_out.view((-1, self.num_segments) + base_out.size()[1:])
++            # print("Baseout {}".format(base_out.shape))
++            # print(base_out[0,:,1:10])
++        #
++        output = self.consensus(base_out)
++        return output.squeeze(1)
+diff --git a/vit_models/modeling_attentionshift.py b/vit_models/modeling_attentionshift.py
+new file mode 100644
+index 0000000..a197ab3
+--- /dev/null
++++ b/vit_models/modeling_attentionshift.py
+@@ -0,0 +1,403 @@
++# coding=utf-8
++from __future__ import absolute_import
++from __future__ import division
++from __future__ import print_function
++
++import copy
++import logging
++import math
++
++from os.path import join as pjoin
++
++import torch
++import torch.nn as nn
++import numpy as np
++
++from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm
++from torch.nn.modules.utils import _pair
++from scipy import ndimage
++
++import vit_models.configs as configs
++
++from vit_models.modeling_resnet import ResNetV2
++
++
++logger = logging.getLogger(__name__)
++
++
++ATTENTION_Q = "MultiHeadDotProductAttention_1/query"
++ATTENTION_K = "MultiHeadDotProductAttention_1/key"
++ATTENTION_V = "MultiHeadDotProductAttention_1/value"
++ATTENTION_OUT = "MultiHeadDotProductAttention_1/out"
++FC_0 = "MlpBlock_3/Dense_0"
++FC_1 = "MlpBlock_3/Dense_1"
++ATTENTION_NORM = "LayerNorm_0"
++MLP_NORM = "LayerNorm_2"
++
++
++def np2th(weights, conv=False):
++    """Possibly convert HWIO to OIHW."""
++    if conv:
++        weights = weights.transpose([3, 2, 0, 1])
++    return torch.from_numpy(weights)
++
++
++def swish(x):
++    return x * torch.sigmoid(x)
++
++
++ACT2FN = {"gelu": torch.nn.functional.gelu,
++          "relu": torch.nn.functional.relu, "swish": swish}
++
++
++class Attention(nn.Module):
++    def __init__(self, config, vis):
++        super(Attention, self).__init__()
++        self.vis = vis
++        self.t = config.n_seg
++        self.num_attention_heads = config.transformer["num_heads"]
++        self.attention_head_size = int(
++            config.hidden_size / self.num_attention_heads)
++        self.all_head_size = self.num_attention_heads * self.attention_head_size
++
++        self.query = Linear(config.hidden_size, self.all_head_size)
++        self.key = Linear(config.hidden_size, self.all_head_size)
++        self.value = Linear(config.hidden_size, self.all_head_size)
++
++        self.out = Linear(config.hidden_size, config.hidden_size)
++        self.attn_dropout = Dropout(
++            config.transformer["attention_dropout_rate"])
++        self.proj_dropout = Dropout(
++            config.transformer["attention_dropout_rate"])
++
++        self.softmax = Softmax(dim=-1)
++
++        self.fold_div = config.fold_div
++
++    def transpose_for_scores(self, x):
++        new_x_shape = x.size()[
++            :-1] + (self.num_attention_heads, self.attention_head_size)
++        x = x.view(*new_x_shape)
++        return x.permute(0, 2, 1, 3)
++
++    def forward(self, hidden_states):
++        mixed_query_layer = self.query(hidden_states)
++        mixed_key_layer = self.key(hidden_states)
++        mixed_value_layer = self.value(hidden_states)
++
++        query_layer = self.transpose_for_scores(mixed_query_layer)
++        key_layer = self.transpose_for_scores(mixed_key_layer)
++        value_layer = self.transpose_for_scores(mixed_value_layer)
++
++        b, h, n, d = query_layer.size()
++        bs = b // self.t
++        key_layer = key_layer.view(bs, self.t, h, n, d)
++        value_layer = value_layer.view(bs, self.t, h, n, d)
++        shift_key_layer = torch.zeros_like(key_layer)  # B, t, h, N+1, D/h
++        shift_value_layer = torch.zeros_like(value_layer)  # B, t, h, N+1, D/h
++        fold = h // self.fold_div
++
++        shift_key_layer[:, :-1, 0:fold, :, :] = key_layer[:, 1:, 0:fold, :, :]
++        shift_key_layer[:, 1:, h - fold:, :, :] = key_layer[:, :-1, h - fold:, :, :]
++        shift_key_layer[:, :, fold:h - fold, :, :] = key_layer[:, :, fold:h - fold, :, :]
++
++        shift_value_layer[:, :-1, 0:fold, :, :] = value_layer[:, 1:, 0:fold, :, :]
++        shift_value_layer[:, 1:, h - fold:, :, :] = value_layer[:, :-1, h - fold:, :, :]
++        shift_value_layer[:, :, fold:h - fold, :, :] = value_layer[:, :, fold:h - fold, :, :]
++
++        shift_key_layer = shift_key_layer.view(b, h, n, d)
++        shift_value_layer = shift_value_layer.view(b, h, n, d)
++
++        attention_scores = torch.matmul(
++            query_layer, shift_key_layer.transpose(-1, -2))
++        attention_scores = attention_scores / \
++            math.sqrt(self.attention_head_size)
++        attention_probs = self.softmax(attention_scores)
++        weights = attention_probs if self.vis else None
++        attention_probs = self.attn_dropout(attention_probs)
++
++        context_layer = torch.matmul(attention_probs, shift_value_layer)
++        context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
++        new_context_layer_shape = context_layer.size()[
++            :-2] + (self.all_head_size,)
++        context_layer = context_layer.view(*new_context_layer_shape)
++        attention_output = self.out(context_layer)
++        attention_output = self.proj_dropout(attention_output)
++        return attention_output, weights
++
++
++class Mlp(nn.Module):
++    def __init__(self, config):
++        super(Mlp, self).__init__()
++        self.fc1 = Linear(config.hidden_size, config.transformer["mlp_dim"])
++        self.fc2 = Linear(config.transformer["mlp_dim"], config.hidden_size)
++        self.act_fn = ACT2FN["gelu"]
++        self.dropout = Dropout(config.transformer["dropout_rate"])
++
++        self._init_weights()
++
++    def _init_weights(self):
++        nn.init.xavier_uniform_(self.fc1.weight)
++        nn.init.xavier_uniform_(self.fc2.weight)
++        nn.init.normal_(self.fc1.bias, std=1e-6)
++        nn.init.normal_(self.fc2.bias, std=1e-6)
++
++    def forward(self, x):
++        x = self.fc1(x)
++        x = self.act_fn(x)
++        x = self.dropout(x)
++        x = self.fc2(x)
++        x = self.dropout(x)
++        return x
++
++
++class Embeddings(nn.Module):
++    """Construct the embeddings from patch, position embeddings.
++    """
++
++    def __init__(self, config, img_size, in_channels=3):
++        super(Embeddings, self).__init__()
++        self.hybrid = None
++        img_size = _pair(img_size)
++
++        if config.patches.get("grid") is not None:
++            grid_size = config.patches["grid"]
++            patch_size = (img_size[0] // 16 // grid_size[0],
++                          img_size[1] // 16 // grid_size[1])
++            n_patches = (img_size[0] // 16) * (img_size[1] // 16)
++            self.hybrid = True
++        else:
++            patch_size = _pair(config.patches["size"])
++            n_patches = (img_size[0] // patch_size[0]) * \
++                (img_size[1] // patch_size[1])
++            self.hybrid = False
++
++        if self.hybrid:
++            self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers,
++                                         width_factor=config.resnet.width_factor)
++            in_channels = self.hybrid_model.width * 16
++        self.patch_embeddings = Conv2d(in_channels=in_channels,
++                                       out_channels=config.hidden_size,
++                                       kernel_size=patch_size,
++                                       stride=patch_size)
++        self.position_embeddings = nn.Parameter(
++            torch.zeros(1, n_patches + 1, config.hidden_size))
++        self.cls_token = nn.Parameter(torch.zeros(1, 1, config.hidden_size))
++
++        self.dropout = Dropout(config.transformer["dropout_rate"])
++
++    def forward(self, x):
++        B = x.shape[0]
++        cls_tokens = self.cls_token.expand(B, -1, -1)
++
++        if self.hybrid:
++            x = self.hybrid_model(x)
++        x = self.patch_embeddings(x)
++        x = x.flatten(2)
++        x = x.transpose(-1, -2)
++        x = torch.cat((cls_tokens, x), dim=1)
++
++        embeddings = x + self.position_embeddings
++        embeddings = self.dropout(embeddings)
++        return embeddings
++
++
++class Block(nn.Module):
++    def __init__(self, config, vis):
++        super(Block, self).__init__()
++        self.hidden_size = config.hidden_size
++        self.attention_norm = LayerNorm(config.hidden_size, eps=1e-6)
++        self.ffn_norm = LayerNorm(config.hidden_size, eps=1e-6)
++        self.ffn = Mlp(config)
++        self.attn = Attention(config, vis)
++
++    def forward(self, x):
++        h = x
++        x = self.attention_norm(x)
++        x, weights = self.attn(x)
++        x = x + h
++
++        h = x
++        x = self.ffn_norm(x)
++        x = self.ffn(x)
++        x = x + h
++        return x, weights
++
++    def load_from(self, weights, n_block):
++        ROOT = f"Transformer/encoderblock_{n_block}"
++        with torch.no_grad():
++            query_weight = np2th(weights[pjoin(ROOT, ATTENTION_Q, "kernel")]).view(
++                self.hidden_size, self.hidden_size).t()
++            key_weight = np2th(weights[pjoin(ROOT, ATTENTION_K, "kernel")]).view(
++                self.hidden_size, self.hidden_size).t()
++            value_weight = np2th(weights[pjoin(ROOT, ATTENTION_V, "kernel")]).view(
++                self.hidden_size, self.hidden_size).t()
++            out_weight = np2th(weights[pjoin(ROOT, ATTENTION_OUT, "kernel")]).view(
++                self.hidden_size, self.hidden_size).t()
++
++            query_bias = np2th(
++                weights[pjoin(ROOT, ATTENTION_Q, "bias")]).view(-1)
++            key_bias = np2th(
++                weights[pjoin(ROOT, ATTENTION_K, "bias")]).view(-1)
++            value_bias = np2th(
++                weights[pjoin(ROOT, ATTENTION_V, "bias")]).view(-1)
++            out_bias = np2th(
++                weights[pjoin(ROOT, ATTENTION_OUT, "bias")]).view(-1)
++
++            self.attn.query.weight.copy_(query_weight)
++            self.attn.key.weight.copy_(key_weight)
++            self.attn.value.weight.copy_(value_weight)
++            self.attn.out.weight.copy_(out_weight)
++            self.attn.query.bias.copy_(query_bias)
++            self.attn.key.bias.copy_(key_bias)
++            self.attn.value.bias.copy_(value_bias)
++            self.attn.out.bias.copy_(out_bias)
++
++            mlp_weight_0 = np2th(weights[pjoin(ROOT, FC_0, "kernel")]).t()
++            mlp_weight_1 = np2th(weights[pjoin(ROOT, FC_1, "kernel")]).t()
++            mlp_bias_0 = np2th(weights[pjoin(ROOT, FC_0, "bias")]).t()
++            mlp_bias_1 = np2th(weights[pjoin(ROOT, FC_1, "bias")]).t()
++
++            self.ffn.fc1.weight.copy_(mlp_weight_0)
++            self.ffn.fc2.weight.copy_(mlp_weight_1)
++            self.ffn.fc1.bias.copy_(mlp_bias_0)
++            self.ffn.fc2.bias.copy_(mlp_bias_1)
++
++            self.attention_norm.weight.copy_(
++                np2th(weights[pjoin(ROOT, ATTENTION_NORM, "scale")]))
++            self.attention_norm.bias.copy_(
++                np2th(weights[pjoin(ROOT, ATTENTION_NORM, "bias")]))
++            self.ffn_norm.weight.copy_(
++                np2th(weights[pjoin(ROOT, MLP_NORM, "scale")]))
++            self.ffn_norm.bias.copy_(
++                np2th(weights[pjoin(ROOT, MLP_NORM, "bias")]))
++
++
++class Encoder(nn.Module):
++    def __init__(self, config, vis):
++        super(Encoder, self).__init__()
++        self.vis = vis
++        self.layer = nn.ModuleList()
++        self.encoder_norm = LayerNorm(config.hidden_size, eps=1e-6)
++        for _ in range(config.transformer["num_layers"]):
++            layer = Block(config, vis)
++            self.layer.append(copy.deepcopy(layer))
++
++    def forward(self, hidden_states):
++        attn_weights = []
++        for layer_block in self.layer:
++            hidden_states, weights = layer_block(hidden_states)
++            if self.vis:
++                attn_weights.append(weights)
++        encoded = self.encoder_norm(hidden_states)
++        return encoded, attn_weights
++
++
++class Transformer(nn.Module):
++    def __init__(self, config, img_size, vis):
++        super(Transformer, self).__init__()
++        self.embeddings = Embeddings(config, img_size=img_size)
++        self.encoder = Encoder(config, vis)
++
++    def forward(self, input_ids):
++        embedding_output = self.embeddings(input_ids)
++        encoded, attn_weights = self.encoder(embedding_output)
++        return encoded, attn_weights
++
++
++class VisionTransformer(nn.Module):
++    def __init__(self, config, img_size=224, num_classes=21843, zero_head=False, vis=False):
++        super(VisionTransformer, self).__init__()
++        self.num_classes = num_classes
++        self.zero_head = zero_head
++        self.classifier = config.classifier
++
++        self.transformer = Transformer(config, img_size, vis)
++        self.head = Linear(config.hidden_size, num_classes)
++
++    def forward(self, x, labels=None):
++        x, attn_weights = self.transformer(x)
++        logits = self.head(x[:, 0])
++
++        if labels is not None:
++            loss_fct = CrossEntropyLoss()
++            loss = loss_fct(logits.view(-1, self.num_classes), labels.view(-1))
++            return loss
++        else:
++            return logits, attn_weights
++
++    def load_from(self, weights):
++        with torch.no_grad():
++            if self.zero_head:
++                nn.init.zeros_(self.head.weight)
++                nn.init.zeros_(self.head.bias)
++            else:
++                self.head.weight.copy_(np2th(weights["head/kernel"]).t())
++                self.head.bias.copy_(np2th(weights["head/bias"]).t())
++
++            self.transformer.embeddings.patch_embeddings.weight.copy_(
++                np2th(weights["embedding/kernel"], conv=True))
++            self.transformer.embeddings.patch_embeddings.bias.copy_(
++                np2th(weights["embedding/bias"]))
++            self.transformer.embeddings.cls_token.copy_(np2th(weights["cls"]))
++            self.transformer.encoder.encoder_norm.weight.copy_(
++                np2th(weights["Transformer/encoder_norm/scale"]))
++            self.transformer.encoder.encoder_norm.bias.copy_(
++                np2th(weights["Transformer/encoder_norm/bias"]))
++
++            posemb = np2th(weights["Transformer/posembed_input/pos_embedding"])
++            posemb_new = self.transformer.embeddings.position_embeddings
++            if posemb.size() == posemb_new.size():
++                self.transformer.embeddings.position_embeddings.copy_(posemb)
++            else:
++                logger.info("load_pretrained: resized variant: %s to %s" %
++                            (posemb.size(), posemb_new.size()))
++                ntok_new = posemb_new.size(1)
++
++                if self.classifier == "token":
++                    posemb_tok, posemb_grid = posemb[:, :1], posemb[0, 1:]
++                    ntok_new -= 1
++                else:
++                    posemb_tok, posemb_grid = posemb[:, :0], posemb[0]
++
++                gs_old = int(np.sqrt(len(posemb_grid)))
++                gs_new = int(np.sqrt(ntok_new))
++                print('load_pretrained: grid-size from %s to %s' %
++                      (gs_old, gs_new))
++                posemb_grid = posemb_grid.reshape(gs_old, gs_old, -1)
++
++                zoom = (gs_new / gs_old, gs_new / gs_old, 1)
++                posemb_grid = ndimage.zoom(posemb_grid, zoom, order=1)
++                posemb_grid = posemb_grid.reshape(1, gs_new * gs_new, -1)
++                posemb = np.concatenate([posemb_tok, posemb_grid], axis=1)
++                self.transformer.embeddings.position_embeddings.copy_(
++                    np2th(posemb))
++
++            for bname, block in self.transformer.encoder.named_children():
++                for uname, unit in block.named_children():
++                    unit.load_from(weights, n_block=uname)
++
++            if self.transformer.embeddings.hybrid:
++                self.transformer.embeddings.hybrid_model.root.conv.weight.copy_(
++                    np2th(weights["conv_root/kernel"], conv=True))
++                gn_weight = np2th(weights["gn_root/scale"]).view(-1)
++                gn_bias = np2th(weights["gn_root/bias"]).view(-1)
++                self.transformer.embeddings.hybrid_model.root.gn.weight.copy_(
++                    gn_weight)
++                self.transformer.embeddings.hybrid_model.root.gn.bias.copy_(
++                    gn_bias)
++
++                for bname, block in self.transformer.embeddings.hybrid_model.body.named_children():
++                    for uname, unit in block.named_children():
++                        unit.load_from(weights, n_block=bname, n_unit=uname)
++
++
++CONFIGS = {
++    'ViT-B_16': configs.get_b16_config(),
++    'ViT-B_32': configs.get_b32_config(),
++    'ViT-L_16': configs.get_l16_config(),
++    'ViT-L_32': configs.get_l32_config(),
++    'ViT-H_14': configs.get_h14_config(),
++    'R50-ViT-B_16': configs.get_r50_b16_config(),
++    'testing': configs.get_testing(),
++}

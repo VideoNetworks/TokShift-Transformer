@@ -1,0 +1,65 @@
+DATASET: "k400"
+
+# Dataset Folder
+FRAME_REPO: "/mnt/HDD12TB-1/dataset/Kinetics400.frames"
+TRN_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/train_list.txt"
+VAL_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/val_list.txt"
+TEST_LIST_TXT: "/mnt/HDD12TB-1/hashiguchi/tokenshift/val_list.txt"
+FRAME_FORMAT: "{:06d}.jpg"
+USE_SUBSET: False
+
+# TRAINING-CFG
+LABEL_SMOOTH: 0.01
+
+PIXEL_MEAN: [127.5, 127.5, 127.5]
+PIXEL_STD: [0.5, 0.5, 0.5]
+
+TRN_BATCH: 21 # Batch Per GPU, This setting is on 2xV100
+VAL_BATCH: 2 # Batch Per GPU, This setting is on 2xV100
+LR_TYPE: "sgd"
+LR_SCHEME: "step"
+LR: 0.1 # This is 42 Clips settings, using linear-scale ruel to adjust this value
+LR_STEPS: [10, 15, 18]
+EPOCH: 18
+MOMENTUM: 0.9
+WEIGHT_DECAY: 0.0 # 5e-4
+GRADIENT_ACCUMULATION_STEPS: 10 # 8
+CLIP_GD: 1.0
+
+# Data Proces
+# 1. Input Clip
+T_SIZE: 8
+T_STEP: 32
+#DENSE_OR_UNIFORM: "uniform"
+UNIFORM_TWICE: True
+
+DENSE_OR_UNIFORM: "dense"
+VAL_SAMPLE_TIMES: 1 # Set to 10 when evaluating, Set to 1 when training for time-saving
+VAL_FLIP: False
+# Multiple cropped patchs in Test,
+# "3": Left ,Center, Right
+## Not Implemented: "5": Top-Left, Top-Right, Center, Bot-Left, Bot-Right
+VAL_TEST_AUG: 3 # Multiple cropped patchs in Test,
+
+# 2. Resize and Crop
+TRN_PATCH_SIZE: 224
+TRN_SHORT_SIDE_RANGE: [224, 330]
+
+VAL_PATCH_SIZE: 224
+VAL_SHORT_SIDE: 224
+
+# Backbone
+NET: "AttentionShift"
+VER: 3
+NUM_CLASS: 400
+BASE_NET: "ViT-B_16"
+CONSENSUS_TYPE: "avg"
+DROP_OUT: 0.0
+PARTIAL_BN: False # True Froze all BN
+PRINT_SPEC: True
+PRETRAIN: "imagenet"
+IS_SHIFT: True # Select shift
+SHIFT_DIV: 12
+USE_PRECISE_BN: 0
+DROP_BLOCK: 0.0
+#USE_PRECISE_BN: 0
